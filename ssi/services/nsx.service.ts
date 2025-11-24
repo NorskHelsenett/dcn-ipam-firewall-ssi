@@ -161,7 +161,7 @@ export const deploySecurityGroup = async (
  * Creates a VMware NSX security group object from Netbox integrator configuration
  * Includes IP address expressions and optional scope/tag metadata
  */
-export const createSecurityGroup = async (
+export const createSecurityGroup = (
   integrator: NAMNetboxIntegrator,
   prefixes: NetboxPrefix[]
 ) => {

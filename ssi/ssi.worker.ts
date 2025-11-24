@@ -10,7 +10,6 @@ import {
   NAMNetboxIntegrator,
   NAMv2Driver,
   NetboxDriver,
-  NetboxPrefix,
   VMWareNSXDriver,
 } from "@norskhelsenett/zeniki";
 import https from "node:https";
@@ -25,7 +24,7 @@ import {
   deployAddresses6,
 } from "./services/fortios.service.ts";
 import logger from "./loggers/logger.ts";
-import { globalAgent } from "node:https";
+
 
 const SSI_NAME = Deno.env.get("SSI_NAME") ?? "SSI_NAME_MISSING";
 const USER_AGENT = `${SSI_NAME}/${packageInfo.version}`;
@@ -34,7 +33,7 @@ const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 10000;
 
-const HTTPS_AGENT = new https.Agent({
+const _HTTPS_AGENT = new https.Agent({
   rejectUnauthorized: Deno.env.get("DENO_ENV")! != "development", // Set to false to disable certificate verification
   keepAlive: true,
   timeout: REQUEST_TIMEOUT,

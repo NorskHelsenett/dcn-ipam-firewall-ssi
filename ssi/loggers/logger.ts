@@ -31,7 +31,7 @@ const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 10000;
 
-const HTTPS_AGENT = new https.Agent({
+const _HTTPS_AGENT = new https.Agent({
   rejectUnauthorized: Deno.env.get("DENO_ENV")! != "development", // Set to false to disable certificate verification
   keepAlive: true,
   timeout: REQUEST_TIMEOUT,
