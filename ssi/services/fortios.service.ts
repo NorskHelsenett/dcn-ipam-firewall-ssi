@@ -13,7 +13,7 @@ import {
   NAMNetboxIntegrator,
   FortiOSFirewallAddrGrp6,
   isDevMode,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import { getAddGrpMemberChanges } from "../ssi.utils.ts";
 import logger from "../loggers/logger.ts";
 

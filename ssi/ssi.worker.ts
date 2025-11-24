@@ -12,7 +12,7 @@ import {
   NetboxDriver,
   NetboxPrefix,
   VMWareNSXDriver,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import https from "node:https";
 import { mapper, mapper6 } from "./ssi.utils.ts";
 import packageInfo from "../deno.json" with { type: "json" };

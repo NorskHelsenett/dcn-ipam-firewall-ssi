@@ -9,7 +9,7 @@ import {
   NetboxPrefix,
   VMWareNSXDriver,
   VMwareNSXGroup,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import logger from "../loggers/logger.ts";
 
 /**

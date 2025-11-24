@@ -10,7 +10,7 @@ import {
   FortiOSFirewallAddrGrp6,
   NetboxPrefix,
   NetboxVlan,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import { IPv4CidrRange } from "ip-num";
 import differenceWith from "lodash.differencewith";
 

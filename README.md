@@ -24,7 +24,7 @@ IPAM-Firewall-SSI automatically syncs IP prefixes from Netbox to firewall addres
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd ipam-ssi
+cd dcn-ipam-firewall-ssi
 
 # Copy example configuration files
 cp examples/config.yaml.example config/config.yaml

@@ -8,7 +8,7 @@
  * - Continuous mode (CRON_MODE = "true"): Runs continuously with interval-based scheduling
  */
 
-import { EnvLoader, isDevMode } from "@nhn/zeniki";
+import { EnvLoader, isDevMode } from "@norskhelsenett/zeniki";
 import { SSIWorker } from "./ssi/ssi.worker.ts";
 import logger, { addFileLoggers } from "./ssi/loggers/logger.ts";
 import packageInfo from "./deno.json" with { type: "json" };

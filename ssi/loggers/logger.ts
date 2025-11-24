@@ -12,7 +12,7 @@ import {
   WinstonHecLogger,
   WinstonLoggerConsoleColors,
   WinstonLoggerLevels,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import https from "node:https";
 
 let hecLogger: WinstonHecLogger | undefined;

@@ -9,7 +9,7 @@ import {
   type NetboxPrefix,
   type FortiOSFirewallAddrGrp,
   EnvLoader,
-} from "@nhn/zeniki";
+} from "@norskhelsenett/zeniki";
 import { SSIWorker } from "./ssi/ssi.worker.ts";
 
 const SECRETS_PATH = Deno.env.get("SECRETS_PATH") ?? undefined;
