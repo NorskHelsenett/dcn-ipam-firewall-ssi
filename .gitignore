@@ -17,6 +17,8 @@ test_/
 *.p12
 *.pfx
 *.cer
+#Include Internal CA chain.
+!nhn_internal_ca_chain.crt
 
 # Archives
 *.tgz
