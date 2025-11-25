@@ -24,5 +24,5 @@ NAM_TEST_INT: "507f1f77bcf86cd799439011"   # Netbox integrator ID for testing
 # Splunk logging settings
 SPLUNK_URL: "https://splunk.example.com"   # Splunk HEC endpoint
 SPLUNK_INDEX: "network_automation"         # Target Splunk index
-SPLUNK_SOURCE: "ipam-firewall-ssi"         # Log source identifier
+SPLUNK_SOURCE: "ipam-firewall-ssi:qa"         # Log source identifier with environment
 SPLUNK_SOURCE_TYPE: "ipam-firewall-ssi:high" # Source type with priority

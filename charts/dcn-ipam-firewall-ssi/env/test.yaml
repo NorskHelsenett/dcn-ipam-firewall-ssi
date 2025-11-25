@@ -2,11 +2,11 @@ schedule: "*/5 * * * *"
 
 limits:
   memory:
-    min: "128Mi"
-    max: "256Mi"
+    min: "384Mi"
+    max: "1024Mi"
   cpu:
     min: "200m"
-    max: "400m"
+    max: "800m"
 
 settings:
   environment: development

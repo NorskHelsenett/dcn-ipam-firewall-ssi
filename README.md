@@ -162,8 +162,8 @@ ipam-ssi/
 │   └── argo-ipam-firewall-ssi.yaml.example # Argo CD Application example
 ├── logs/                     # Log files directory (auto-created)
 ├── charts/                   # Helm charts
-│   └── ipam-firewall-ssi/    # Production Helm chart
-│       ├── Chart.yaml        # Chart metadata (v0.9.0)
+│   └── dcn-ipam-firewall-ssi/ # Production Helm chart
+│       ├── Chart.yaml        # Chart metadata (v0.9.24)
 │       ├── README.md         # Helm chart documentation
 │       ├── values.yaml       # Default values
 │       ├── env/              # Environment-specific values
@@ -199,8 +199,8 @@ The recommended deployment method is using the Helm chart with Argo CD or standa
 
 ```bash
 # Install using Helm
-helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/prod.yaml \
+helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
   --set credentials.namToken="your-nam-token" \
   --set credentials.splunkToken="your-splunk-token"
@@ -221,7 +221,7 @@ kubectl apply -f examples/argo-ipam-firewall-ssi.yaml.example
 ```
 
 For detailed Helm chart usage, configuration options, and examples, see:
-- **Helm Chart README**: `charts/ipam-firewall-ssi/README.md`
+- **Helm Chart README**: `charts/dcn-ipam-firewall-ssi/README.md`
 - **Argo CD Example**: `examples/argo-ipam-firewall-ssi.yaml.example`
 
 ### Docker
@@ -307,12 +307,12 @@ kubectl apply -f kubernetes/secret.yaml
 kubectl apply -f kubernetes/ipam-firewall-ssi.yaml
 
 # Check status
-kubectl get pods -n ipam-firewall-ssi
-kubectl logs -n ipam-firewall-ssi ipam-firewall-ssi
+kubectl get pods -n ssi
+kubectl logs -n ssi ipam-firewall-ssi
 
 # Update configuration
-kubectl edit configmap ipam-firewall-ssi-config -n ipam-firewall-ssi
-kubectl delete pod ipam-firewall-ssi -n ipam-firewall-ssi  # Restart pod
+kubectl edit configmap ipam-firewall-ssi-config -n ssi
+kubectl delete pod ipam-firewall-ssi -n ssi  # Restart pod
 ```
 
 **Note:** For production deployments, use the Helm chart instead for better configuration management and multi-environment support.
@@ -413,8 +413,8 @@ docker logs ipam-firewall-ssi
 # Logs show permission errors:
 # - Verify securityContext in ipam-firewall-ssi.yaml
 # - Ensure ConfigMap and Secret are properly mounted
-kubectl describe pod ipam-firewall-ssi -n ipam-firewall-ssi
-kubectl logs ipam-firewall-ssi -n ipam-firewall-ssi
+kubectl describe pod ipam-firewall-ssi -n ssi
+kubectl logs ipam-firewall-ssi -n ssi
 ```
 
 ## How It Works
@@ -527,8 +527,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-## Author
+## Support
 
-**Kevin Andre Vatn**  
-Email: kevin.vatn@nhn.no  
-Organization: Norsk Helsenett SF
+For issues, bug reports, and feature requests:
+- **GitHub Issues**: [NorskHelsenett/dcn-ipam-firewall-ssi/issues](https://github.com/NorskHelsenett/dcn-ipam-firewall-ssi/issues)
+- **Website**: [https://www.nhn.no](https://www.nhn.no)

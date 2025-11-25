@@ -5,8 +5,8 @@ Network automation sync for IPAM to Firewall systems (FortiOS and VMware NSX).
 ## Quick Start
 
 ```bash
-helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/prod.yaml \
+helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
   --set credentials.namToken="your-nam-token" \
   --set credentials.splunkToken="your-splunk-token"
@@ -25,16 +25,16 @@ helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
 ### Basic Configuration
 
 | Variable | Description | Default |
-|----------|-------------|---------|
-| `namespace` | Target namespace | `ipam-firewall-ssi` |
+|----------|-------------|---------||
+| `namespace` | Target namespace | `ssi` |
 | `nameOverride` | Override chart name | `""` |
 | `workspace` | Workspace identifier | `ipam-firewall-ssi` |
 
 ### Image Configuration
 
 | Variable | Description | Default |
-|----------|-------------|---------|
-| `image.repository` | Container image repository | `ncr.sky.nhn.no/kevvat-test/ipam-firewall-ssi` |
+|----------|-------------|---------||
+| `image.repository` | Container image repository | `ncr.sky.nhn.no/ghcr/norskhelsenett/dcn-ipam-firewall-ssi` |
 | `image.tag` | Image tag | `latest` |
 | `image.pullPolicy` | Pull policy | `Always` |
 
@@ -51,10 +51,10 @@ helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `limits.memory.min` | Memory request | `128Mi` |
-| `limits.memory.max` | Memory limit | `384Mi` |
-| `limits.cpu.min` | CPU request | `100m` |
-| `limits.cpu.max` | CPU limit | `300m` |
+| `limits.memory.min` | Memory request | `384Mi` |
+| `limits.memory.max` | Memory limit | `1152Mi` |
+| `limits.cpu.min` | CPU request | `300m` |
+| `limits.cpu.max` | CPU limit | `600m` |
 
 ### Application Settings
 
@@ -64,7 +64,7 @@ helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
 | `settings.environment` | Runtime environment | `production` | `production`, `development` |
 | `settings.priority` | SSI priority (mandatory) | `low` | `low`, `medium`, `high` |
 | `settings.interval` | Sync interval in seconds | `300` | Integer |
-| `settings.timeout` | API timeout in milliseconds | `10000` | Integer |
+| `settings.timeout` | API timeout in milliseconds | `3000` | Integer |
 | `settings.continuousMode` | CRON_MODE setting | `false` | `true` (continuous), `false` (one-shot) |
 
 ### Integration Settings
@@ -89,44 +89,44 @@ helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
 ### Production Deployment (High Priority)
 
 ```bash
-helm install ipam-firewall-ssi-high-prod ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/prod.yaml \
+helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
   --set credentials.namToken="prod-token-here" \
   --set credentials.splunkToken="prod-splunk-token"
 ```
 
-Creates CronJob: `ipam-firewall-ssi-high-prod` in namespace `ipam-firewall-ssi`
+Creates CronJob: `ipam-firewall-ssi-high-prod` in namespace `ssi`
 
 ### QA Deployment (Medium Priority)
 
 ```bash
-helm install ipam-firewall-ssi-medium-qa ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/qa.yaml \
+helm install ipam-firewall-ssi-medium-qa ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/qa.yaml \
   --set settings.priority="medium" \
   --set credentials.namToken="qa-token-here" \
   --set credentials.splunkToken="qa-splunk-token"
 ```
 
-Creates CronJob: `ipam-firewall-ssi-medium-qa` in namespace `ipam-firewall-ssi`
+Creates CronJob: `ipam-firewall-ssi-medium-qa` in namespace `ssi`
 
 ### Test Deployment (Low Priority)
 
 ```bash
-helm install ipam-firewall-ssi-low-test ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/test.yaml \
+helm install ipam-firewall-ssi-low-test ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/test.yaml \
   --set settings.priority="low" \
   --set credentials.namToken="test-token-here" \
   --set credentials.splunkToken="test-splunk-token"
 ```
 
-Creates CronJob: `ipam-firewall-ssi-low-test` in namespace `ipam-firewall-ssi`
+Creates CronJob: `ipam-firewall-ssi-low-test` in namespace `ssi`
 
 ### Custom Schedule
 
 ```bash
-helm install ipam-firewall-ssi-medium-prod ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/prod.yaml \
+helm install ipam-firewall-ssi-medium-prod ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set schedule="0 */2 * * *" \
   --set settings.priority="medium" \
   --set credentials.namToken="token" \
@@ -137,37 +137,37 @@ helm install ipam-firewall-ssi-medium-prod ./charts/ipam-firewall-ssi \
 
 Pre-configured environment files are available:
 
-- `env/prod.yaml` - Production settings (schedule: */15 min, resources: 256-512Mi/200-500m)
-- `env/qa.yaml` - QA settings (schedule: */15 min, resources: 128-256Mi/150-300m)
-- `env/test.yaml` - Test/Development settings (schedule: */5 min, resources: 128-256Mi/150-300m, with test integrator)
+- `env/prod.yaml` - Production settings (schedule: */15 min, resources: 384-1152Mi/300-600m)
+- `env/qa.yaml` - QA settings (schedule: */15 min, resources: 384-1152Mi/300-600m)
+- `env/test.yaml` - Test/Development settings (schedule: */5 min, resources: 384-1152Mi/300-600m, with test integrator)
 
 ## Commands
 
 ```bash
 # Install
-helm install ipam-firewall-ssi-{priority}-{infrastructure} ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/{infrastructure}.yaml \
+helm install ipam-firewall-ssi-{priority}-{infrastructure} ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/{infrastructure}.yaml \
   --set settings.priority="{priority}" \
   --set credentials.namToken="token" \
   --set credentials.splunkToken="splunk-token"
 
 # Upgrade
-helm upgrade ipam-firewall-ssi-{priority}-{infrastructure} ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/{infrastructure}.yaml \
+helm upgrade ipam-firewall-ssi-{priority}-{infrastructure} ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/{infrastructure}.yaml \
   --set settings.priority="{priority}"
 
 # Uninstall
 helm uninstall ipam-firewall-ssi-{priority}-{infrastructure}
 
 # Template (dry-run)
-helm template ipam-firewall-ssi-low-test ./charts/ipam-firewall-ssi \
-  -f charts/ipam-firewall-ssi/env/test.yaml \
+helm template ipam-firewall-ssi-low-test ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/test.yaml \
   --set settings.priority="low" \
   --set credentials.namToken="test" \
   --set credentials.splunkToken="test"
 
 # Validate
-helm lint ./charts/ipam-firewall-ssi
+helm lint ./charts/dcn-ipam-firewall-ssi
 
 # List releases
 helm list -A
@@ -183,29 +183,34 @@ See `examples/argo-ipam-firewall-ssi.yaml.example` for a complete Argo CD Applic
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ipam-firewall-ssi-high-prod
+  name: ipam-firewall-ssi-low-qa #ipam-firewall-ssi-<priority>-<environment>
   namespace: argocd
+
 spec:
   destination:
     namespace: ssi
     server: https://kubernetes.default.svc
   project: default
   source:
-    chart: ipam-firewall-ssi
+    chart: dcn-ipam-firewall-ssi
     helm:
       valueFiles:
       - values.yaml
-      - env/prod.yaml
+      - env/qa.yaml #test, qa, prod
       parameters:
+        - name: settings.continuousMode
+          value: "true" # True for continuous mode (Pod), false for one shot mode (CronJob)
+        - name: settings.interval
+          value: "300" #Seconds for continuous mode (Pod)
         - name: schedule
-          value: "*/30 * * * *" 
+          value: "*/5 * * * *" # Used for one shot mode (CronJob)
         - name: settings.priority
-          value: "high"
+          value: "low" # high, medium, low
         - name: credentials.namToken
-          value: "<your-nam-token-here>"
+          value: "<NAM_TOKEN_HERE>"
         - name: credentials.splunkToken
-          value: "<your-splunk-token-here>" 
-    repoURL: ncr.sky.nhn.no/kevvat-test-helm
+          value: "<SPLUNK_TOKEN_HERE>" 
+    repoURL: ncr.sky.nhn.no/ghcr/norskhelsenett/helm
     targetRevision: "*"
   syncPolicy:
     automated:
@@ -220,8 +225,8 @@ spec:
 ```bash
 # Production - High Priority
 argocd app create ipam-firewall-ssi-high-prod \
-  --repo ncr.sky.nhn.no/kevvat-test-helm \
-  --helm-chart ipam-firewall-ssi \
+  --repo ncr.sky.nhn.no/ghcr/norskhelsenett/helm \
+  --helm-chart dcn-ipam-firewall-ssi \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace ssi \
   --values env/prod.yaml \
@@ -233,8 +238,8 @@ argocd app create ipam-firewall-ssi-high-prod \
 
 # QA - Medium Priority
 argocd app create ipam-firewall-ssi-medium-qa \
-  --repo ncr.sky.nhn.no/kevvat-test-helm \
-  --helm-chart ipam-firewall-ssi \
+  --repo ncr.sky.nhn.no/ghcr/norskhelsenett/helm \
+  --helm-chart dcn-ipam-firewall-ssi \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace ssi \
   --values env/qa.yaml \
@@ -246,8 +251,8 @@ argocd app create ipam-firewall-ssi-medium-qa \
 
 # Test - Low Priority
 argocd app create ipam-firewall-ssi-low-test \
-  --repo ncr.sky.nhn.no/kevvat-test-helm \
-  --helm-chart ipam-firewall-ssi \
+  --repo ncr.sky.nhn.no/ghcr/norskhelsenett/helm \
+  --helm-chart dcn-ipam-firewall-ssi \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace ssi \
   --values env/test.yaml \

@@ -2,8 +2,8 @@ schedule: "*/15 * * * *"
 
 limits:
   memory:
-    min: "512Mi"
-    max: "2048Mi"
+    min: "384Mi"
+    max: "1152Mi"
   cpu:
     min: "300m"
     max: "600m"
