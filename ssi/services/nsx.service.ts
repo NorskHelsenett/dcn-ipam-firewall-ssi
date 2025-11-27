@@ -24,7 +24,7 @@ export const deploySecurityGroup = async (
 ) => {
   try {
     let groupIps: string[] = [];
-    const securityGroup = (await nsx
+    const securityGroup = (await nsx.groups
       .getGroup(
         securityGroupObject.display_name as string,
         undefined,
@@ -46,7 +46,7 @@ export const deploySecurityGroup = async (
 
     // If security group not found create it.
     if (!securityGroup) {
-      await nsx
+      await nsx.groups
         .patchGroup(
           securityGroupObject.display_name as string,
           securityGroupObject,
@@ -114,7 +114,7 @@ export const deploySecurityGroup = async (
       );
 
       if (added.length || deleted.length) {
-        await nsx
+        await nsx.groups
           .patchGroup(
             securityGroupObject.display_name as string,
             securityGroupObject,

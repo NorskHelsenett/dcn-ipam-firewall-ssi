@@ -30,7 +30,7 @@ export const deployAddresses = async (
   try {
     if (firewall) {
       const groups: FortiOSFirewallAddrGrp[] | undefined = (
-        await firewall
+        await firewall.addrgrp
           .getAddressGroups({ vdom: vdom.name })
           .catch((error: unknown) => {
             logger.warning(
@@ -47,7 +47,7 @@ export const deployAddresses = async (
       )?.results;
 
       const addresses: FortiOSFirewallAddress[] | undefined = (
-        await firewall
+        await firewall.address
           .getAddresses({ vdom: vdom.name })
           .catch((error: unknown) => {
             logger.warning(
@@ -84,7 +84,7 @@ export const deployAddresses = async (
         });
 
         if (!existing) {
-          await firewall
+          await firewall.address
             .addAddress(prefix, { vdom: vdom.name })
             .then((_res) => {
               logger.info(
@@ -123,7 +123,7 @@ export const deployAddresses = async (
             return { name: prefix.name };
           });
 
-          await firewall
+          await firewall.addrgrp
             .addAddressGroup(
               {
                 name: groupName,
@@ -198,7 +198,7 @@ export const deployAddresses = async (
           };
 
           if (updates?.added.length > 0 || updates?.removed.length > 0) {
-            await firewall
+            await firewall.addrgrp
               .updateAddressGroup(groupName, updatedGroup, {
                 vdom: vdom.name,
               })
@@ -229,17 +229,19 @@ export const deployAddresses = async (
               });
 
             for (const removed_prefix_name of updates.removed) {
-             const ip_address  = (await firewall
-                .getAddress(removed_prefix_name, {
-                  with_meta: 1,
-                  vdom: vdom.name,
-                })
-                .catch((_error) => {
-                  // Do nothing!
-                }))?.results[0];
+              const ip_address = (
+                await firewall.address
+                  .getAddress(removed_prefix_name, {
+                    with_meta: 1,
+                    vdom: vdom.name,
+                  })
+                  .catch((_error) => {
+                    // Do nothing!
+                  })
+              )?.results[0];
 
               if (ip_address?.q_ref === 0) {
-                await firewall
+                await firewall.address
                   .deleteAddress(removed_prefix_name, { vdom: vdom.name })
                   .then((_res) => {
                     logger.info(
@@ -292,7 +294,7 @@ export const deployAddresses6 = async (
   try {
     if (firewall) {
       const groups: FortiOSFirewallAddrGrp6[] | undefined = (
-        await firewall
+        await firewall.addrgrp6
           .getAddressGroups6({ vdom: vdom.name })
           .catch((error: unknown) => {
             logger.warning(
@@ -309,7 +311,7 @@ export const deployAddresses6 = async (
       )?.results;
 
       const addresses = (
-        await firewall
+        await firewall.address6
           .getAddresses6({ vdom: vdom.name })
           .catch((error: unknown) => {
             logger.warning(
@@ -345,7 +347,7 @@ export const deployAddresses6 = async (
           return address.name === prefix.name;
         });
         if (!existing) {
-          await firewall
+          await firewall.address6
             .addAddress6(prefix, { vdom: vdom.name })
             .then((_res) => {
               logger.info(
@@ -384,7 +386,7 @@ export const deployAddresses6 = async (
             return { name: prefix.name };
           });
 
-          await firewall
+          await firewall.addrgrp6
             .addAddressGroup6(
               {
                 name: groupName,
@@ -459,7 +461,7 @@ export const deployAddresses6 = async (
           };
 
           if (updates?.added.length > 0 || updates?.removed.length > 0) {
-            await firewall
+            await firewall.addrgrp6
               .updateAddressGroup6(groupName, updatedGroup, { vdom: vdom.name })
               .then((_res) => {
                 logger.info(
@@ -489,7 +491,7 @@ export const deployAddresses6 = async (
 
             for (const removed_prefix_name of updates.removed) {
               let ip6_address = (
-                await firewall
+                await firewall.address6
                   .getAddress6(removed_prefix_name, {
                     with_meta: 1,
                     vdom: vdom.name,
@@ -501,7 +503,7 @@ export const deployAddresses6 = async (
 
               if (ip6_address?.q_ref === 0) {
                 ip6_address = undefined;
-                await firewall
+                await firewall.address6
                   .deleteAddress6(removed_prefix_name, {
                     vdom: vdom.name,
                   })

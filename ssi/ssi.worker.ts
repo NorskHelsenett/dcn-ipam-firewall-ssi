@@ -43,7 +43,7 @@ const NAM_URL = Deno.env.get("NAM_URL");
 const NAM_TOKEN = Deno.env.get("NAM_TOKEN");
 const NAM_TEST_INT = Deno.env.get("NAM_TEST_INT");
 
-let ranNumberOfTimes = 0;
+let RUN_COUNTER = 0;
 
 /**
  * Main worker class that orchestrates IPAM to firewall synchronization
@@ -91,12 +91,12 @@ export class SSIWorker {
         const integrators =
           isDevMode() && NAM_TEST_INT
             ? [
-                await SSIWorker._nms.getNetboxIntegrator(NAM_TEST_INT, {
+                await SSIWorker._nms.netbox_integrators.getNetboxIntegrator(NAM_TEST_INT, {
                   expand: 1,
                 }),
               ]
             : ((
-                await SSIWorker._nms.getNetboxIntegrators({
+                await SSIWorker._nms.netbox_integrators.getNetboxIntegrators({
                   expand: 1,
                   sync_priority: priority,
                 })
@@ -134,7 +134,7 @@ export class SSIWorker {
           }
 
           const netboxPrefixes = (
-            await this._ipam.getPrefixes(netboxQuery, true).catch((error) => {
+            await this._ipam.prefixes.getPrefixes(netboxQuery, true).catch((error) => {
               logger.warning(
                 `ipam-firewall-ssi: Could not retrieve prefixes from IPAM ${this?._ipam?.getHostname()} due to ${
                   error.message
@@ -255,7 +255,7 @@ export class SSIWorker {
         this._resetDriverInstances();
         logger.debug("ipam-firewall-ssi: Worker task completed...");
         console.log(
-          `ipam-firewall-ssi: Completed run number ${(ranNumberOfTimes += 1)}`
+          `ipam-firewall-ssi: Completed run number ${(RUN_COUNTER += 1)}`
         );
         return 0;
       } else {
@@ -265,7 +265,7 @@ export class SSIWorker {
     } catch (error) {
       this._running = false;
       console.log(
-        `ipam-firewall-ssi: Completed run number ${(ranNumberOfTimes += 1)}`
+        `ipam-firewall-ssi: Completed run number ${(RUN_COUNTER += 1)}`
       );
       throw error;
     }

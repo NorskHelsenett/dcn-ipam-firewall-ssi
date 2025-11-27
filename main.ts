@@ -47,7 +47,6 @@ envLoader.close();
 const start = async (): Promise<void> => {
   try {
     console.log(`Starting ${USER_AGENT}`);
-    addFileLoggers();
     const ssiWorker = new SSIWorker();
     if (Deno.env.get("CRON_MODE") !== "true") {
       logger.info(

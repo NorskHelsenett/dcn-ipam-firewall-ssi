@@ -12,6 +12,7 @@
 
 # Environment and SSI settings
 DENO_ENV: "production"                     # Runtime environment: development, production
+CRON_MODE: "false"                         # Execution mode: "false" or undefined = one-shot (CronJob), "true" = continuous (Pod)
 SSI_NAME: "IPAM-Firewall-SSI"              # Service name
 SSI_PRIORITY: "high"                       # Execution priority: low, medium, high
 SSI_INTERVAL: "300"                        # Sync interval in seconds
