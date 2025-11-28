@@ -38,8 +38,8 @@ jobs:
       - name: Lint
         run: deno lint
 
-      #- name: Format check
-      #  run: deno fmt --check
+      - name: Format check
+        run: deno fmt --check
 
       - name: Type check
         run: deno check main.ts

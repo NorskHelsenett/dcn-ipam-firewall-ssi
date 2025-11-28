@@ -1,12 +1,14 @@
 # Deployment Guide
 
-This guide covers all deployment methods for IPAM-Firewall-SSI including Helm, Docker, and Kubernetes.
+This guide covers all deployment methods for IPAM-Firewall-SSI including Helm,
+Docker, and Kubernetes.
 
 ## Deployment Methods
 
 ### Helm Chart (Recommended)
 
-The recommended deployment method is using the Helm chart with Argo CD or standard Helm.
+The recommended deployment method is using the Helm chart with Argo CD or
+standard Helm.
 
 **Quick Start:**
 
@@ -20,6 +22,7 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 ```
 
 **Features:**
+
 - Environment-specific configurations (prod, qa, test)
 - CronJob-based deployment with configurable schedules
 - Automatic resource management based on priority
@@ -34,6 +37,7 @@ kubectl apply -f examples/argo-ipam-firewall-ssi.yaml.example
 ```
 
 For detailed Helm chart usage, configuration options, and examples, see:
+
 - **Helm Chart README**: `charts/dcn-ipam-firewall-ssi/README.md`
 - **Argo CD Example**: `examples/argo-ipam-firewall-ssi.yaml.example`
 
@@ -72,7 +76,8 @@ docker run -d \
 
 **Important: File Permissions**
 
-The container runs as user `deno` (UID:GID 1993:1993) for security. Ensure proper permissions:
+The container runs as user `deno` (UID:GID 1993:1993) for security. Ensure
+proper permissions:
 
 ```bash
 # Required permissions for mounted volumes:
@@ -90,15 +95,18 @@ chmod 644 secrets/secrets.yaml  # or 400 for more security
 **Docker Compose Configuration:**
 
 The `docker-compose.yml` includes:
+
 - User specification: `user: "1993:1993"`
 - Volume mounts:
   - `./config/config.yaml:/app/config/config.yaml:ro` - Config (read-only)
   - `./secrets/secrets.yaml:/app/secrets/secrets.yaml:ro` - Secrets (read-only)
 - Environment variables for config paths
 
-**Note:** Logs are written inside the container and not persisted to host. Use `docker logs` to view output.
+**Note:** Logs are written inside the container and not persisted to host. Use
+`docker logs` to view output.
 
 **Dockerfile Features:**
+
 - Based on official Deno image
 - Runs tests during build to validate configuration
 - Includes NHN internal CA chain for SSL verification
@@ -128,36 +136,44 @@ kubectl edit configmap ipam-firewall-ssi-config -n ssi
 kubectl delete pod ipam-firewall-ssi -n ssi  # Restart pod
 ```
 
-**Note:** For production deployments, use the Helm chart instead for better configuration management and multi-environment support.
+**Note:** For production deployments, use the Helm chart instead for better
+configuration management and multi-environment support.
 
 **Deployment Options:**
 
-1. **CronJob** (default): Set `CRON_MODE: "false"` or omit it in ConfigMap, deploy as a Kubernetes CronJob for scheduled one-shot executions
-2. **Long-running Pod**: Set `CRON_MODE: "true"` in ConfigMap for continuous execution with interval-based scheduling
+1. **CronJob** (default): Set `CRON_MODE: "false"` or omit it in ConfigMap,
+   deploy as a Kubernetes CronJob for scheduled one-shot executions
+2. **Long-running Pod**: Set `CRON_MODE: "true"` in ConfigMap for continuous
+   execution with interval-based scheduling
 
 **Kubernetes Resources:**
+
 - **ConfigMap** (`configmap.yaml`): Non-sensitive configuration
 - **Secret** (`secret.yaml`): Sensitive credentials (NAM_TOKEN, SPLUNK_TOKEN)
 - **Pod** (`ipam-firewall-ssi.yaml`): Main application deployment
 
 **Security Features:**
+
 - Read-only root filesystem
 - Runs as non-root user (1993:1993)
 - No privilege escalation
 - Minimal capabilities (all dropped)
 - Runtime security profile enabled
 - Resource limits enforced (128-384Mi memory, 100-300m CPU)
-- EmptyDir volume for logs (50Mi limit) - logs stored in container, not persisted
+- EmptyDir volume for logs (50Mi limit) - logs stored in container, not
+  persisted
 
 ### Configuration Paths
 
 The application looks for configuration files at:
+
 - **Default Local**: `./config/config.yaml` and `./secrets/secrets.yaml`
-- **Docker/Kubernetes**: 
+- **Docker/Kubernetes**:
   - Config: `/app/config/config.yaml` (via `CONFIG_PATH` env var)
   - Secrets: `/app/secrets/secrets.yaml` (via `SECRETS_PATH` env var)
 
 **Quick Start:**
+
 ```bash
 # Copy example templates
 cp examples/config.yaml.example config/config.yaml
@@ -169,6 +185,7 @@ nano secrets/secrets.yaml
 ```
 
 Set custom paths using environment variables:
+
 ```bash
 export CONFIG_PATH="/custom/path/config.yaml"
 export SECRETS_PATH="/custom/path/secrets.yaml"
@@ -234,9 +251,12 @@ kubectl logs ipam-firewall-ssi -n ssi
 
 ### Production Deployments
 
-1. **Use Helm Chart**: Provides better configuration management and multi-environment support
-2. **Use Secrets Management**: Store tokens in Kubernetes Secrets or external secret managers
-3. **Set Resource Limits**: Configure appropriate CPU and memory limits based on workload
+1. **Use Helm Chart**: Provides better configuration management and
+   multi-environment support
+2. **Use Secrets Management**: Store tokens in Kubernetes Secrets or external
+   secret managers
+3. **Set Resource Limits**: Configure appropriate CPU and memory limits based on
+   workload
 4. **Enable Monitoring**: Use Splunk HEC or other logging solutions
 5. **Use CronJob Mode**: For scheduled executions (recommended for production)
 
@@ -246,11 +266,13 @@ kubectl logs ipam-firewall-ssi -n ssi
 2. **Read-only Filesystem**: Enable read-only root filesystem
 3. **Drop Capabilities**: Remove all unnecessary Linux capabilities
 4. **Secret Permissions**: Set secrets.yaml to 400 or 600 permissions
-5. **Network Policies**: Implement Kubernetes network policies to restrict traffic
+5. **Network Policies**: Implement Kubernetes network policies to restrict
+   traffic
 
 ### High Availability
 
 For high availability deployments:
+
 1. Use multiple CronJob schedules with different priorities
 2. Implement health checks and monitoring
 3. Configure appropriate retry mechanisms

@@ -1,6 +1,7 @@
 # Development Guide
 
-This guide covers development setup, project structure, and best practices for contributing to IPAM-Firewall-SSI.
+This guide covers development setup, project structure, and best practices for
+contributing to IPAM-Firewall-SSI.
 
 ## Project Structure
 
@@ -53,6 +54,7 @@ ipam-ssi/
 ## Development Mode
 
 Set `DENO_ENV=development` in `config/config.yaml` to:
+
 - Enable debug logging
 - Disable SSL certificate verification
 - Use `NAM_TEST_INT` for single integrator testing
@@ -63,7 +65,7 @@ Set `DENO_ENV=development` in `config/config.yaml` to:
 ```yaml
 # In config/config.yaml
 DENO_ENV: "development"
-NAM_TEST_INT: "507f1f77bcf86cd799439011"  # Your integrator ID
+NAM_TEST_INT: "507f1f77bcf86cd799439011" # Your integrator ID
 ```
 
 ## Getting Started
@@ -110,11 +112,13 @@ deno coverage coverage
 ## Code Structure
 
 ### Main Entry Point (`main.ts`)
+
 - Loads configuration from YAML files
 - Initializes the worker
 - Handles execution mode (one-shot vs continuous)
 
 ### Worker (`ssi/ssi.worker.ts`)
+
 - Orchestrates the sync process
 - Fetches integrators from NAM API
 - Iterates through integrators and deploys to firewalls
@@ -122,20 +126,24 @@ deno coverage coverage
 ### Services
 
 #### FortiOS Service (`ssi/services/fortios.service.ts`)
+
 - `deployAddresses()` - Deploys IPv4 addresses and groups
 - `deployAddresses6()` - Deploys IPv6 addresses and groups
 - Handles address creation, group updates, and cleanup
 
 #### NSX Service (`ssi/services/nsx.service.ts`)
+
 - `deploySecurityGroup()` - Creates/updates NSX security groups
 - `createSecurityGroup()` - Builds security group objects
 - Manages IP address expressions
 
 ### Utilities (`ssi/ssi.utils.ts`)
+
 - Helper functions for address group member comparisons
 - Data transformation utilities
 
 ### Logger (`ssi/loggers/logger.ts`)
+
 - Winston-based logging
 - Multiple transports: console, file, Splunk HEC
 - Environment-specific configuration
@@ -163,9 +171,11 @@ export FILELOG_DAYS="30d"               # Log retention
 ## Debugging
 
 ### Enable Debug Logs
+
 Set `DENO_ENV: "development"` in `config/config.yaml`
 
 ### View Logs
+
 ```bash
 # Console output
 deno task dev
@@ -182,14 +192,17 @@ tail -f logs/debug.log
 ### Common Issues
 
 **SSL Certificate Errors:**
+
 - Development mode disables SSL verification
 - Production requires valid certificates
 
 **Permission Errors:**
+
 - Ensure config files are readable: `chmod 644 config/*.yaml`
 - For Docker: `sudo chown 1993:1993 config/*.yaml`
 
 **API Timeouts:**
+
 - Increase `REQUEST_TIMEOUT` in config.yaml
 - Check network connectivity to NAM/Netbox/Firewall APIs
 
@@ -198,9 +211,14 @@ tail -f logs/debug.log
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes and test thoroughly
-4. Commit with descriptive messages
-5. Push to your fork: `git push origin feature/my-feature`
-6. Create a Pull Request
+4. Run linter: `deno lint`
+5. Format code: `deno fmt`
+6. Commit with descriptive messages
+7. Push to your fork: `git push origin feature/my-feature`
+8. Create a Pull Request
+
+**Note:** All contributions must pass `deno fmt` and `deno lint` checks before
+being accepted.
 
 ## Code Style
 
@@ -209,6 +227,7 @@ tail -f logs/debug.log
 - Add comments for complex logic
 - Include JSDoc comments for exported functions
 - Format code consistently with Deno formatter: `deno fmt`
+- **Run linter to catch issues**: `deno lint` (required for all PRs)
 
 ## License
 

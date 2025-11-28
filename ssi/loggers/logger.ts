@@ -54,8 +54,8 @@ const FILELOG_DAYS = Deno.env.get("FILELOG_DAYS")
 
 const SPLUNK_INDEX = Deno.env.get("SPLUNK_INDEX") ?? undefined;
 const SPLUNK_SOURCE = Deno.env.get("SPLUNK_SOURCE") ?? "ssi";
-const SPLUNK_SOURCE_TYPE =
-  Deno.env.get("SPLUNK_SOURCE_TYPE") ?? "ipam-firewall-ssi:high";
+const SPLUNK_SOURCE_TYPE = Deno.env.get("SPLUNK_SOURCE_TYPE") ??
+  "ipam-firewall-ssi:high";
 envLoader.close();
 /**
  * Determines log level based on environment mode
@@ -74,7 +74,7 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss.SSS" }),
   winston.format.printf(({ level, message, timestamp }) => {
     return `${timestamp} ${level}: ${message}`;
-  })
+  }),
 );
 
 /**
@@ -90,8 +90,9 @@ const splunkHECFormat = winston.format.combine(
         message: message,
         // Include any other metadata or custom fields you want
         // The '...meta' captures any additional properties passed to the log function
-        meta:
-          metadata && Object.keys(metadata).length > 0 ? metadata : undefined,
+        meta: metadata && Object.keys(metadata).length > 0
+          ? metadata
+          : undefined,
       },
       host: Deno.hostname(),
       index: SPLUNK_INDEX,
@@ -101,7 +102,7 @@ const splunkHECFormat = winston.format.combine(
     };
 
     return JSON.stringify(hecWriterObject);
-  })
+  }),
 );
 
 /**
@@ -116,9 +117,9 @@ const debugFilter = winston.format((info, _opts) => {
  */
 const _noHttpFilter = winston.format((info, _opts) => {
   return info.level === "info" ||
-    info.level === "warning" ||
-    info.level === "error" ||
-    info.level === "debug"
+      info.level === "warning" ||
+      info.level === "error" ||
+      info.level === "debug"
     ? info
     : false;
 });
@@ -136,7 +137,7 @@ const transports = [
     handleExceptions: true,
     format: winston.format.combine(
       winston.format.errors({ stack: true }),
-      winston.format.colorize({ all: true })
+      winston.format.colorize({ all: true }),
     ),
   }),
 ];
@@ -179,7 +180,7 @@ const addHecLogger = () => {
         {
           level: "info",
           format: splunkHECFormat,
-        }
+        },
       );
       logger.add(hecLogger);
     }
@@ -193,7 +194,7 @@ const addHecLogger = () => {
         component: "logger",
         method: "addHecLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
     throw error;
   }
@@ -219,7 +220,7 @@ export const removeHecLogger = () => {
         component: "logger",
         method: "removeHecLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
   }
 };
@@ -256,7 +257,7 @@ export const addFileLoggers = () => {
         maxFiles: FILELOG_DAYS,
         format: winston.format.combine(
           winston.format.errors({ stack: true }),
-          winston.format.json()
+          winston.format.json(),
         ),
       });
 
@@ -274,7 +275,7 @@ export const addFileLoggers = () => {
         handleExceptions: true,
         format: winston.format.combine(
           winston.format.errors({ stack: true }),
-          winston.format.json()
+          winston.format.json(),
         ),
       });
 
@@ -292,7 +293,7 @@ export const addFileLoggers = () => {
         handleExceptions: true,
         format: winston.format.combine(
           winston.format.errors({ stack: true }),
-          winston.format.json()
+          winston.format.json(),
         ),
       });
 
@@ -311,7 +312,7 @@ export const addFileLoggers = () => {
         format: winston.format.combine(
           debugFilter(),
           winston.format.errors({ stack: true }),
-          winston.format.json()
+          winston.format.json(),
         ),
       });
 
@@ -327,7 +328,7 @@ export const addFileLoggers = () => {
         component: "logger",
         method: "addFileLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
   }
 };
@@ -364,7 +365,7 @@ export const removeFileLoggers = () => {
         component: "logger",
         method: "removeFileLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
   }
 };
@@ -403,7 +404,7 @@ export const addSplunkFileLogger = () => {
         component: "logger",
         method: "addSplunkFileLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
   }
 };
@@ -427,7 +428,7 @@ export const removeSplunkFileLogger = () => {
         component: "logger",
         method: "removeSplunkFileLogger",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
   }
 };
