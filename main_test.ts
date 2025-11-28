@@ -4,11 +4,11 @@
  */
 
 import { assertEquals, assertExists, assertThrows } from "@std/assert";
-import { mapper, mapper6, getAddGrpMemberChanges } from "./ssi/ssi.utils.ts";
+import { getAddGrpMemberChanges, mapper, mapper6 } from "./ssi/ssi.utils.ts";
 import {
-  type NetboxPrefix,
-  type FortiOSFirewallAddrGrp,
   EnvLoader,
+  type FortiOSFirewallAddrGrp,
+  type NetboxPrefix,
 } from "@norskhelsenett/zeniki";
 import { SSIWorker } from "./ssi/ssi.worker.ts";
 
@@ -190,7 +190,7 @@ Deno.test(
     assertEquals(changes.removed.length, 2);
     assertEquals(changes.removed.includes("addr2"), true);
     assertEquals(changes.removed.includes("addr3"), true);
-  }
+  },
 );
 
 Deno.test(
@@ -210,7 +210,7 @@ Deno.test(
 
     assertEquals(changes.added.length, 0);
     assertEquals(changes.removed.length, 0);
-  }
+  },
 );
 
 Deno.test(
@@ -225,13 +225,13 @@ Deno.test(
       () => {
         getAddGrpMemberChanges(
           undefined as unknown as FortiOSFirewallAddrGrp,
-          newGroup
+          newGroup,
         );
       },
       Error,
-      "FortiOS member group(s) cannot be undefined"
+      "FortiOS member group(s) cannot be undefined",
     );
-  }
+  },
 );
 
 Deno.test(
@@ -246,13 +246,13 @@ Deno.test(
       () => {
         getAddGrpMemberChanges(
           existingGroup,
-          undefined as unknown as FortiOSFirewallAddrGrp
+          undefined as unknown as FortiOSFirewallAddrGrp,
         );
       },
       Error,
-      "FortiOS member group(s) cannot be undefined"
+      "FortiOS member group(s) cannot be undefined",
     );
-  }
+  },
 );
 
 // ============================================================================
@@ -310,7 +310,7 @@ if (Deno.args[0] === "e2e") {
       assertExists(NAM_TEST_INT);
       const worker = new SSIWorker();
       assertEquals(worker.isRunning, false);
-    }
+    },
   );
 
   Deno.test(
@@ -328,7 +328,7 @@ if (Deno.args[0] === "e2e") {
       const result = await worker.work(SSI_PRIORITY);
       assertEquals(result, 0); // Should return 0 on success
       assertEquals(worker.isRunning, false); // Should be false after completion
-    }
+    },
   );
 
   Deno.test("SSIWorker: should handle different priority levels", async () => {

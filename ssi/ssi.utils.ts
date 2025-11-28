@@ -26,16 +26,17 @@ export const mapper = (prefixes: NetboxPrefix[]) => {
     .map((_prefix: NetboxPrefix) => {
       return {
         name: `netbox_${_prefix.prefix}`,
-        comment:
-          _prefix.vlan && (_prefix.vlan as NetboxVlan).name
-            ? (_prefix.vlan as NetboxVlan).name.toLowerCase()
-            : undefined,
-        subnet: `${_prefix?.prefix?.split("/")[0]} ${IPv4CidrRange.fromCidr(
-          _prefix.prefix as string
-        )
-          .getPrefix()
-          .toMask()
-          .toString()}`,
+        comment: _prefix.vlan && (_prefix.vlan as NetboxVlan).name
+          ? (_prefix.vlan as NetboxVlan).name.toLowerCase()
+          : undefined,
+        subnet: `${_prefix?.prefix?.split("/")[0]} ${
+          IPv4CidrRange.fromCidr(
+            _prefix.prefix as string,
+          )
+            .getPrefix()
+            .toMask()
+            .toString()
+        }`,
         color: 0,
       } as FortiOSFirewallAddress;
     });
@@ -55,10 +56,9 @@ export const mapper6 = (prefixes: NetboxPrefix[]) => {
     .map((_prefix: NetboxPrefix) => {
       return {
         name: `netbox6_${_prefix.display}`,
-        comment:
-          _prefix.vlan && (_prefix.vlan as NetboxVlan).name
-            ? (_prefix.vlan as NetboxVlan).name.toLowerCase()
-            : undefined,
+        comment: _prefix.vlan && (_prefix.vlan as NetboxVlan).name
+          ? (_prefix.vlan as NetboxVlan).name.toLowerCase()
+          : undefined,
         ip6: _prefix.prefix,
       } as FortiOSFirewallAddress6;
     });
@@ -72,7 +72,7 @@ export const mapper6 = (prefixes: NetboxPrefix[]) => {
  */
 export const getAddGrpMemberChanges = (
   existingGroup: FortiOSFirewallAddrGrp | FortiOSFirewallAddrGrp6,
-  newGroup: FortiOSFirewallAddrGrp | FortiOSFirewallAddrGrp6
+  newGroup: FortiOSFirewallAddrGrp | FortiOSFirewallAddrGrp6,
 ) => {
   if (!existingGroup || !newGroup) {
     throw new Error("FortiOS member group(s) cannot be undefined");
@@ -80,7 +80,7 @@ export const getAddGrpMemberChanges = (
 
   const compareMembers = (
     array1Value: { name: string },
-    array2Value: { name: string }
+    array2Value: { name: string },
   ) => {
     return array1Value.name === array2Value.name;
   };
@@ -89,14 +89,14 @@ export const getAddGrpMemberChanges = (
   const removed = differenceWith(
     existingGroup.member,
     newGroup.member,
-    compareMembers
+    compareMembers,
   ) as { name: string }[];
 
   // Find members in newGroup not in existingGroup
   const added = differenceWith(
     newGroup.member,
     existingGroup.member,
-    compareMembers
+    compareMembers,
   ) as { name: string }[];
 
   return {

@@ -20,7 +20,7 @@ export const deploySecurityGroup = async (
   nsx: VMWareNSXDriver,
   securityGroupObject: VMwareNSXGroup,
   prefixes: NetboxPrefix[],
-  globalManager?: boolean
+  globalManager?: boolean,
 ) => {
   try {
     let groupIps: string[] = [];
@@ -29,18 +29,16 @@ export const deploySecurityGroup = async (
         securityGroupObject.display_name as string,
         undefined,
         undefined,
-        globalManager
+        globalManager,
       )
       .catch((error) => {
         logger.warning(
-          `ipam-firewall-ssi: Security group '${
-            securityGroupObject.display_name
-          }' not found on '${nsx.getHostname()}'`,
+          `ipam-firewall-ssi: Security group '${securityGroupObject.display_name}' not found on '${nsx.getHostname()}'`,
           {
             component: "nsx.service",
             method: "deploySecurityGroup",
             error: isDevMode() ? error : (error as Error).message,
-          }
+          },
         );
       })) as VMwareNSXGroup;
 
@@ -52,33 +50,28 @@ export const deploySecurityGroup = async (
           securityGroupObject,
           undefined,
           undefined,
-          globalManager
+          globalManager,
         )
         .then((_res) => {
           logger.info(
-            `ipam-firewall-ssi: Created security group '${
-              securityGroupObject.display_name
-            }' on '${nsx.getHostname()}'`,
+            `ipam-firewall-ssi: Created security group '${securityGroupObject.display_name}' on '${nsx.getHostname()}'`,
             {
               component: "nsx.service",
               method: "deploySecurityGroup",
-            }
+            },
           );
         })
         .catch((error: Error) => {
           logger.error(
-            `ipam-firewall-ssi: Failed to create security group '${
-              securityGroupObject.display_name
-            }' on '${nsx.getHostname()}'`,
+            `ipam-firewall-ssi: Failed to create security group '${securityGroupObject.display_name}' on '${nsx.getHostname()}'`,
             {
               component: "nsx.service",
               method: "deploySecurityGroup",
               error: isDevMode() ? error : (error as Error).message,
-            }
+            },
           );
         });
-    }
-    // or check for changes in ip addresses and patch it is found.
+    } // or check for changes in ip addresses and patch it is found.
     else {
       if (securityGroup.expression) {
         for (const expression of securityGroup.expression) {
@@ -98,7 +91,7 @@ export const deploySecurityGroup = async (
           (netbox_ip: string | null) =>
             !groupIps.some((nsx_ip: string | null) => {
               return nsx_ip === netbox_ip;
-            })
+            }),
         );
 
       //Find members only present in NSX
@@ -110,7 +103,7 @@ export const deploySecurityGroup = async (
             })
             .some((netboxIp: string | null) => {
               return netboxIp === nsxIp;
-            })
+            }),
       );
 
       if (added.length || deleted.length) {
@@ -120,31 +113,27 @@ export const deploySecurityGroup = async (
             securityGroupObject,
             undefined,
             undefined,
-            globalManager
+            globalManager,
           )
           .then((_res) => {
             console.log("Update resp", _res);
 
             logger.info(
-              `ipam-firewall-ssi: Updated security group '${
-                securityGroupObject.display_name
-              }' on '${nsx.getHostname()}'`,
+              `ipam-firewall-ssi: Updated security group '${securityGroupObject.display_name}' on '${nsx.getHostname()}'`,
               {
                 component: "nsx.service",
                 method: "deploySecurityGroup",
-              }
+              },
             );
           })
           .catch((error: Error) => {
             logger.error(
-              `ipam-firewall-ssi: Failed to update security group '${
-                securityGroupObject.display_name
-              }' on '${nsx.getHostname()}'`,
+              `ipam-firewall-ssi: Failed to update security group '${securityGroupObject.display_name}' on '${nsx.getHostname()}'`,
               {
                 component: "nsx.service",
                 method: "deploySecurityGroup",
                 error: isDevMode() ? error : (error as Error).message,
-              }
+              },
             );
           });
       }
@@ -163,45 +152,42 @@ export const deploySecurityGroup = async (
  */
 export const createSecurityGroup = (
   integrator: NAMNetboxIntegrator,
-  prefixes: NetboxPrefix[]
+  prefixes: NetboxPrefix[],
 ) => {
   const ipAddresses = prefixes.map((prefix: NetboxPrefix) => {
     return prefix.prefix as string;
   });
 
-  const securityGroup: VMwareNSXGroup =
-    ipAddresses.length > 0
-      ? {
-          expression: [
-            {
-              ip_addresses: ipAddresses,
-              resource_type: "IPAddressExpression",
-            },
-          ],
-          display_name: `nsg-${integrator.nsx_group_name}`,
-          description: "Managed by NAM",
-          tags:
-            integrator.nsx_group_scope && integrator.nsx_group_tag
-              ? [
-                  {
-                    scope: integrator.nsx_group_scope,
-                    tag: integrator.nsx_group_tag,
-                  },
-                ]
-              : [],
-        }
-      : {
-          display_name: `nsg-${integrator.nsx_group_name}`,
-          description: "Managed by NAM",
-          tags:
-            integrator.nsx_group_scope && integrator.nsx_group_tag
-              ? [
-                  {
-                    scope: integrator.nsx_group_scope,
-                    tag: integrator.nsx_group_tag,
-                  },
-                ]
-              : [],
-        };
+  const securityGroup: VMwareNSXGroup = ipAddresses.length > 0
+    ? {
+      expression: [
+        {
+          ip_addresses: ipAddresses,
+          resource_type: "IPAddressExpression",
+        },
+      ],
+      display_name: `nsg-${integrator.nsx_group_name}`,
+      description: "Managed by NAM",
+      tags: integrator.nsx_group_scope && integrator.nsx_group_tag
+        ? [
+          {
+            scope: integrator.nsx_group_scope,
+            tag: integrator.nsx_group_tag,
+          },
+        ]
+        : [],
+    }
+    : {
+      display_name: `nsg-${integrator.nsx_group_name}`,
+      description: "Managed by NAM",
+      tags: integrator.nsx_group_scope && integrator.nsx_group_tag
+        ? [
+          {
+            scope: integrator.nsx_group_scope,
+            tag: integrator.nsx_group_tag,
+          },
+        ]
+        : [],
+    };
   return securityGroup;
 };

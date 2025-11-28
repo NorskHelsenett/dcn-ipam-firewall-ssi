@@ -14,75 +14,72 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 
 ## Mandatory Parameters
 
-| Parameter | Description | Values |
-|-----------|-------------|--------|
-| `credentials.namToken` | NAM API authentication token | String (JWT token) |
-| `credentials.splunkToken` | Splunk HEC token | String (UUID) |
-| `settings.priority` | Execution priority | `low`, `medium`, `high` |
+| Parameter                 | Description                  | Values                  |
+| ------------------------- | ---------------------------- | ----------------------- |
+| `credentials.namToken`    | NAM API authentication token | String (JWT token)      |
+| `credentials.splunkToken` | Splunk HEC token             | String (UUID)           |
+| `settings.priority`       | Execution priority           | `low`, `medium`, `high` |
 
 ## All Configurable Variables
 
 ### Basic Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------||
-| `namespace` | Target namespace | `ssi` |
-| `nameOverride` | Override chart name | `""` |
-| `workspace` | Workspace identifier | `ipam-firewall-ssi` |
+| Variable | Description | Default | |----------|-------------|---------|| |
+`namespace` | Target namespace | `ssi` | | `nameOverride` | Override chart name
+| `""` | | `workspace` | Workspace identifier | `ipam-firewall-ssi` |
 
 ### Image Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------||
-| `image.repository` | Container image repository | `ncr.sky.nhn.no/ghcr/norskhelsenett/dcn-ipam-firewall-ssi` |
-| `image.tag` | Image tag | `latest` |
-| `image.pullPolicy` | Pull policy | `Always` |
+| Variable | Description | Default | |----------|-------------|---------|| |
+`image.repository` | Container image repository |
+`ncr.sky.nhn.no/ghcr/norskhelsenett/dcn-ipam-firewall-ssi` | | `image.tag` |
+Image tag | `latest` | | `image.pullPolicy` | Pull policy | `Always` |
 
 ### CronJob Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `schedule` | Cron schedule expression | `*/15 * * * *` |
-| `successfulJobsHistoryLimit` | Successful jobs to keep | `3` |
-| `failedJobsHistoryLimit` | Failed jobs to keep | `3` |
-| `allowConcurrent` | Allow concurrent executions | `false` |
+| Variable                     | Description                 | Default        |
+| ---------------------------- | --------------------------- | -------------- |
+| `schedule`                   | Cron schedule expression    | `*/15 * * * *` |
+| `successfulJobsHistoryLimit` | Successful jobs to keep     | `3`            |
+| `failedJobsHistoryLimit`     | Failed jobs to keep         | `3`            |
+| `allowConcurrent`            | Allow concurrent executions | `false`        |
 
 ### Resource Limits
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `limits.memory.min` | Memory request | `384Mi` |
-| `limits.memory.max` | Memory limit | `1152Mi` |
-| `limits.cpu.min` | CPU request | `300m` |
-| `limits.cpu.max` | CPU limit | `600m` |
+| Variable            | Description    | Default  |
+| ------------------- | -------------- | -------- |
+| `limits.memory.min` | Memory request | `384Mi`  |
+| `limits.memory.max` | Memory limit   | `1152Mi` |
+| `limits.cpu.min`    | CPU request    | `300m`   |
+| `limits.cpu.max`    | CPU limit      | `600m`   |
 
 ### Application Settings
 
-| Variable | Description | Default | Values |
-|----------|-------------|---------|--------|
-| `settings.infrastructure` | Infrastructure environment | `prod` | `prod`, `qa`, `dev` |
-| `settings.environment` | Runtime environment | `production` | `production`, `development` |
-| `settings.priority` | SSI priority (mandatory) | `low` | `low`, `medium`, `high` |
-| `settings.interval` | Sync interval in seconds | `300` | Integer |
-| `settings.timeout` | API timeout in milliseconds | `3000` | Integer |
-| `settings.continuousMode` | CRON_MODE setting | `false` | `true` (continuous), `false` (one-shot) |
+| Variable                  | Description                 | Default      | Values                                  |
+| ------------------------- | --------------------------- | ------------ | --------------------------------------- |
+| `settings.infrastructure` | Infrastructure environment  | `prod`       | `prod`, `qa`, `dev`                     |
+| `settings.environment`    | Runtime environment         | `production` | `production`, `development`             |
+| `settings.priority`       | SSI priority (mandatory)    | `low`        | `low`, `medium`, `high`                 |
+| `settings.interval`       | Sync interval in seconds    | `300`        | Integer                                 |
+| `settings.timeout`        | API timeout in milliseconds | `3000`       | Integer                                 |
+| `settings.continuousMode` | CRON_MODE setting           | `false`      | `true` (continuous), `false` (one-shot) |
 
 ### Integration Settings
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `integration.nam.url` | NAM API endpoint URL | `""` |
-| `integration.nam.test_int` | Test integrator ID (dev only) | `""` |
-| `integration.splunk.url` | Splunk HEC endpoint | `https://splunk-hec.nhn.no` |
-| `integration.splunk.index` | Splunk index name | `dc_nam` |
-| `integration.splunk.source` | Splunk source identifier | `ipam-firewall-ssi:prod` |
+| Variable                    | Description                   | Default                     |
+| --------------------------- | ----------------------------- | --------------------------- |
+| `integration.nam.url`       | NAM API endpoint URL          | `""`                        |
+| `integration.nam.test_int`  | Test integrator ID (dev only) | `""`                        |
+| `integration.splunk.url`    | Splunk HEC endpoint           | `https://splunk-hec.nhn.no` |
+| `integration.splunk.index`  | Splunk index name             | `dc_nam`                    |
+| `integration.splunk.source` | Splunk source identifier      | `ipam-firewall-ssi:prod`    |
 
 ### Credentials (Mandatory)
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `credentials.namToken` | NAM authentication token | `""` |
-| `credentials.splunkToken` | Splunk HEC token | `""` |
+| Variable                  | Description              | Default |
+| ------------------------- | ------------------------ | ------- |
+| `credentials.namToken`    | NAM authentication token | `""`    |
+| `credentials.splunkToken` | Splunk HEC token         | `""`    |
 
 ## Usage Examples
 
@@ -137,9 +134,12 @@ helm install ipam-firewall-ssi-medium-prod ./charts/dcn-ipam-firewall-ssi \
 
 Pre-configured environment files are available:
 
-- `env/prod.yaml` - Production settings (schedule: */15 min, resources: 384-1152Mi/300-600m)
-- `env/qa.yaml` - QA settings (schedule: */15 min, resources: 384-1152Mi/300-600m)
-- `env/test.yaml` - Test/Development settings (schedule: */5 min, resources: 384-1152Mi/300-600m, with test integrator)
+- `env/prod.yaml` - Production settings (schedule: */15 min, resources:
+  384-1152Mi/300-600m)
+- `env/qa.yaml` - QA settings (schedule: */15 min, resources:
+  384-1152Mi/300-600m)
+- `env/test.yaml` - Test/Development settings (schedule: */5 min, resources:
+  384-1152Mi/300-600m, with test integrator)
 
 ## Commands
 
@@ -175,7 +175,8 @@ helm list -A
 
 ## Argo CD Deployment
 
-See `examples/argo-ipam-firewall-ssi.yaml.example` for a complete Argo CD Application manifest.
+See `examples/argo-ipam-firewall-ssi.yaml.example` for a complete Argo CD
+Application manifest.
 
 ### Example Argo CD Application
 
@@ -195,8 +196,8 @@ spec:
     chart: dcn-ipam-firewall-ssi
     helm:
       valueFiles:
-      - values.yaml
-      - env/qa.yaml #test, qa, prod
+        - values.yaml
+        - env/qa.yaml #test, qa, prod
       parameters:
         - name: settings.continuousMode
           value: "true" # True for continuous mode (Pod), false for one shot mode (CronJob)
@@ -209,7 +210,7 @@ spec:
         - name: credentials.namToken
           value: "<NAM_TOKEN_HERE>"
         - name: credentials.splunkToken
-          value: "<SPLUNK_TOKEN_HERE>" 
+          value: "<SPLUNK_TOKEN_HERE>"
     repoURL: ncr.sky.nhn.no/ghcr/norskhelsenett/helm
     targetRevision: "*"
   syncPolicy:
@@ -217,7 +218,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
 ```
 
 ### Deploy with Argo CD CLI

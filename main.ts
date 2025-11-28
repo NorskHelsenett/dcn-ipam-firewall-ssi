@@ -21,7 +21,6 @@ const SSI_NAME = Deno.env.get("SSI_NAME") ?? "SSI_NAME_MISSING";
 const USER_AGENT = `${SSI_NAME}/${packageInfo.version}`;
 Deno.env.set("USER_AGENT", USER_AGENT);
 
-
 let INTERVAL_ID: number | undefined;
 const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low"; // [low | medium | high]
 const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") as string) ?? 900; // In seconds
@@ -50,13 +49,13 @@ const start = async (): Promise<void> => {
     const ssiWorker = new SSIWorker();
     if (Deno.env.get("CRON_MODE") !== "true") {
       logger.info(
-        `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY}`
+        `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY}`,
       );
       await ssiWorker.work(SSI_PRIORITY);
       logger.debug(
         `ipam-firewall-ssi: Waiting to flush logs in ${
           REQUEST_TIMEOUT / 1000
-        } seconds`
+        } seconds`,
       );
       // Added because Splunk logging can be slow...
       setTimeout(() => {
@@ -64,7 +63,7 @@ const start = async (): Promise<void> => {
       }, REQUEST_TIMEOUT);
     } else {
       logger.info(
-        `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY} running every ${SSI_INTERVAL} seconds...`
+        `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY} running every ${SSI_INTERVAL} seconds...`,
       );
       ssiWorker.work(SSI_PRIORITY);
       INTERVAL_ID = setInterval(() => {
@@ -83,7 +82,7 @@ const start = async (): Promise<void> => {
         component: "main",
         method: "start",
         error: isDevMode() ? error : (error as Error).message,
-      }
+      },
     );
     // Added because Splunk logging can be slow...
     setTimeout(() => {
