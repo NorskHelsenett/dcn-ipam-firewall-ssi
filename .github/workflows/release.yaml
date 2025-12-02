@@ -74,7 +74,7 @@ jobs:
           git add deno.json
           git add charts/dcn-ipam-firewall-ssi/Chart.yaml
           git commit -m "chore: Updated version to ${{ env.VERSION }}" || true
-          git push origin main
+          git push origin HEAD:main
 
   create-oci-image:
     name: Create OCI Image
