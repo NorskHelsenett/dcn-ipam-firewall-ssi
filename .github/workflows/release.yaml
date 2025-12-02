@@ -6,12 +6,12 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
   build:
-    name: Build and Test
+    name: Build, Test and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,6 +35,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deno-
 
+      - name: install-yq
+        run: |
+          wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - | tar xz && mv ${BINARY} yq && chmod +x yq
+        env:
+          VERSION: v4.44.5
+          BINARY: yq_linux_amd64
+
       - name: Install dependencies
         run: deno install --allow-scripts
 
@@ -48,11 +55,27 @@ jobs:
         run: deno task test
 
       - name: Set version
+        id: version
         run: |
           VERSION="${{ github.ref_name }}"
           VERSION="${VERSION#v*}"
           echo "Version $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+      
+      - name: Update versions
+        run: |
+          jq '.version = "${{ steps.version.outputs.VERSION }}"'  deno.json > tmp.json && mv tmp.json deno.json
+          ./yq e -i '.version = ${{ steps.version.outputs.VERSION }},.appVersion = ${{ steps.version.outputs.VERSION }}' charts/dcn-ipam-firewall-ssi/Chart.yaml
+          
+      - name: Commit version updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deno.json
+          git add charts/dcn-ipam-firewall-ssi/Chart.yaml
+          git commit -m "chore: Updated version to ${{ steps.version.outputs.VERSION }}" || true
+          git push origin ${{ github.event.repository.default_branch }}
+      
 
   create-oci-image:
     name: Create OCI Image

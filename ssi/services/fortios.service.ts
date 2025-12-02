@@ -19,7 +19,23 @@ import logger from "../loggers/logger.ts";
 
 /**
  * Deploys IPv4 addresses and address groups to a FortiGate firewall VDOM
- * Creates missing addresses, updates groups with added/removed members
+ * Creates missing addresses, updates groups with added/removed members, and cleans up unused addresses
+ *
+ * @param firewall - FortiOS driver instance for API communication
+ * @param vdom - Target VDOM configuration
+ * @param integrator - Netbox integrator configuration
+ * @param prefixes - Array of IPv4 addresses to deploy
+ * @throws Error if deployment operations fail
+ *
+ * @example
+ * ```ts
+ * await deployAddresses(
+ *   fortigate,
+ *   { name: 'root' },
+ *   netboxIntegrator,
+ *   [{ name: 'net_10.0.0.0/24', subnet: ['10.0.0.0', '255.255.255.0'] }]
+ * );
+ * ```
  */
 export const deployAddresses = async (
   firewall: FortiOSDriver | null,
@@ -259,7 +275,23 @@ export const deployAddresses = async (
 
 /**
  * Deploys IPv6 addresses and address groups to a FortiGate firewall VDOM
- * Creates missing addresses, updates groups with added/removed members
+ * Creates missing addresses, updates groups with added/removed members, and cleans up unused addresses
+ *
+ * @param firewall - FortiOS driver instance for API communication
+ * @param vdom - Target VDOM configuration
+ * @param integrator - Netbox integrator configuration
+ * @param prefixes - Array of IPv6 addresses to deploy
+ * @throws Error if deployment operations fail
+ *
+ * @example
+ * ```ts
+ * await deployAddresses6(
+ *   fortigate,
+ *   { name: 'root' },
+ *   netboxIntegrator,
+ *   [{ name: 'net6_2001:db8::/32', ip6: '2001:db8::/32' }]
+ * );
+ * ```
  */
 export const deployAddresses6 = async (
   firewall: FortiOSDriver | null,

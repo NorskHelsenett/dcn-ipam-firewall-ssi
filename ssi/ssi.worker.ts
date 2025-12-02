@@ -67,7 +67,7 @@ export class SSIWorker {
           "Content-Type": "application/json",
           Authorization: `Bearer ${NAM_TOKEN}`,
         },
-        // TODO: Figure out proper timeout, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+        // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),
       });
     }
   }
@@ -149,12 +149,13 @@ export class SSIWorker {
             )
           )?.results || [];
 
-          if (!netboxPrefixes) {
+          if (!netboxPrefixes || netboxPrefixes.length === 0) {
             if (isDevMode()) {
-              logger.debug(
+              logger.info(
                 `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
               );
             }
+            continue;
           }
 
           const prefixes = mapper(netboxPrefixes);
@@ -283,7 +284,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Token ${endpoint.key}`,
       },
-      // TODO: Figure out proper timeout, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   }
 
@@ -298,7 +299,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Bearer ${endpoint.key}`,
       },
-      // TODO: Figure out proper timeout, signal: AbortSignal.timeout(REQUEST_TIMEOUT),,
+      // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),,
     });
   }
 
@@ -318,7 +319,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Basic ${encodedAuth}`,
       },
-      // TODO: Figure out proper timeout, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   };
 

@@ -24,16 +24,19 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 
 ### Basic Configuration
 
-| Variable | Description | Default | |----------|-------------|---------|| |
-`namespace` | Target namespace | `ssi` | | `nameOverride` | Override chart name
-| `""` | | `workspace` | Workspace identifier | `ipam-firewall-ssi` |
+| Variable       | Description          | Default             |
+| -------------- | -------------------- | ------------------- |
+| `namespace`    | Target namespace     | `ssi`               |
+| `nameOverride` | Override chart name  | `""`                |
+| `workspace`    | Workspace identifier | `ipam-firewall-ssi` |
 
 ### Image Configuration
 
-| Variable | Description | Default | |----------|-------------|---------|| |
-`image.repository` | Container image repository |
-`ncr.sky.nhn.no/ghcr/norskhelsenett/dcn-ipam-firewall-ssi` | | `image.tag` |
-Image tag | `latest` | | `image.pullPolicy` | Pull policy | `Always` |
+| Variable           | Description                | Default                                                    |
+| ------------------ | -------------------------- | ---------------------------------------------------------- |
+| `image.repository` | Container image repository | `ncr.sky.nhn.no/ghcr/norskhelsenett/dcn-ipam-firewall-ssi` |
+| `image.tag`        | Image tag                  | `latest`                                                   |
+| `image.pullPolicy` | Pull policy                | `Always`                                                   |
 
 ### CronJob Configuration
 
@@ -55,14 +58,14 @@ Image tag | `latest` | | `image.pullPolicy` | Pull policy | `Always` |
 
 ### Application Settings
 
-| Variable                  | Description                 | Default      | Values                                  |
-| ------------------------- | --------------------------- | ------------ | --------------------------------------- |
-| `settings.infrastructure` | Infrastructure environment  | `prod`       | `prod`, `qa`, `dev`                     |
-| `settings.environment`    | Runtime environment         | `production` | `production`, `development`             |
-| `settings.priority`       | SSI priority (mandatory)    | `low`        | `low`, `medium`, `high`                 |
-| `settings.interval`       | Sync interval in seconds    | `300`        | Integer                                 |
-| `settings.timeout`        | API timeout in milliseconds | `3000`       | Integer                                 |
-| `settings.continuousMode` | CRON_MODE setting           | `false`      | `true` (continuous), `false` (one-shot) |
+| Variable                  | Description                 | Default      | Values/Notes                                        |
+| ------------------------- | --------------------------- | ------------ | --------------------------------------------------- |
+| `settings.infrastructure` | Infrastructure environment  | `prod`       | `prod`, `qa`, `dev`                                 |
+| `settings.environment`    | Runtime environment         | `production` | `production`, `development`                         |
+| `settings.priority`       | SSI priority (mandatory)    | `low`        | `low`, `medium`, `high`                             |
+| `settings.interval`       | Sync interval in seconds    | `300`        | Recommended: low=300s, medium=180s, high=60s        |
+| `settings.timeout`        | API timeout in milliseconds | `3000`       | Integer                                             |
+| `settings.continuousMode` | Execution mode              | `false`      | `false` (one-shot CronJob), `true` (continuous Pod) |
 
 ### Integration Settings
 

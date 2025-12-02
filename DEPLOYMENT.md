@@ -17,8 +17,8 @@ standard Helm.
 helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
-  --set credentials.namToken="your-nam-token" \
-  --set credentials.splunkToken="your-splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 **Features:**
@@ -26,6 +26,7 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 - Environment-specific configurations (prod, qa, test)
 - CronJob-based deployment with configurable schedules
 - Automatic resource management based on priority
+- Priority-based sync intervals (low: 300s, medium: 180s, high: 60s)
 - Argo CD compatible with automated sync
 - See `charts/dcn-ipam-firewall-ssi/README.md` for complete documentation
 
@@ -163,6 +164,25 @@ configuration management and multi-environment support.
 - EmptyDir volume for logs (50Mi limit) - logs stored in container, not
   persisted
 
+### Configuration Recommendations
+
+**Priority and Sync Intervals:**
+
+Choose priority level based on sync requirements:
+
+- **high**: Critical integrators (recommended interval: 60 seconds)
+- **medium**: Standard priority (recommended interval: 180 seconds)
+- **low**: Less frequent sync (recommended interval: 300 seconds)
+
+**Logging Configuration:**
+
+- **Default**: Console output (stdout/stderr) and Splunk HEC (if configured)
+- **File logging**: Disabled by default; only enable when explicitly needed
+- **Development**: Use console output; file logging available via
+  `addFileLoggers()`
+- **Production**: Use console output with `docker logs` or `kubectl logs`, plus
+  Splunk HEC
+
 ### Configuration Paths
 
 The application looks for configuration files at:
@@ -257,8 +277,11 @@ kubectl logs ipam-firewall-ssi -n ssi
    secret managers
 3. **Set Resource Limits**: Configure appropriate CPU and memory limits based on
    workload
-4. **Enable Monitoring**: Use Splunk HEC or other logging solutions
+4. **Enable Monitoring**: Use Splunk HEC for real-time log forwarding (console
+   and Splunk HEC are enabled by default)
 5. **Use CronJob Mode**: For scheduled executions (recommended for production)
+6. **File Logging**: File logging is disabled by default; use console output and
+   centralized logging in production
 
 ### Security Recommendations
 

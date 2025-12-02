@@ -59,6 +59,10 @@ Set `DENO_ENV=development` in `config/config.yaml` to:
 - Disable SSL certificate verification
 - Use `NAM_TEST_INT` for single integrator testing
 - Include full error stack traces in logs
+- Enable Splunk-formatted file logging (auto-enabled in dev mode)
+
+**Note:** Standard file logging (`addFileLoggers()`) is not automatically
+enabled. Call it explicitly in code if needed for development.
 
 ## Testing a Single Integrator
 
@@ -145,7 +149,10 @@ deno coverage coverage
 ### Logger (`ssi/loggers/logger.ts`)
 
 - Winston-based logging
-- Multiple transports: console, file, Splunk HEC
+- Default transports: console and Splunk HEC (if configured)
+- Optional file logging: call `addFileLoggers()` to enable
+- Splunk file logging: auto-enabled in development mode via
+  `addSplunkFileLogger()`
 - Environment-specific configuration
 
 ## Development Workflow
@@ -163,10 +170,16 @@ Development-specific environment variables:
 ```bash
 export DENO_ENV="development"           # Enable dev mode
 export NAM_TEST_INT="your-integrator-id" # Test single integrator
-export FILELOG_DIR="logs"               # Log directory
+export FILELOG_DIR="logs"               # Log directory (for file logging if enabled)
 export FILELOG_SIZE="50m"               # Max log file size
 export FILELOG_DAYS="30d"               # Log retention
 ```
+
+**Logging Behavior:**
+
+- Console and Splunk HEC are always enabled (Splunk if configured)
+- Splunk file logging is auto-enabled in development mode
+- Standard file logging requires explicit call to `addFileLoggers()`
 
 ## Debugging
 
@@ -177,13 +190,16 @@ Set `DENO_ENV: "development"` in `config/config.yaml`
 ### View Logs
 
 ```bash
-# Console output
+# Console output (always enabled)
 deno task dev
 
 # Docker logs
 docker logs -f ipam-firewall-ssi
 
-# File logs (dev mode only)
+# Splunk file logs (auto-enabled in dev mode)
+tail -f logs/splunk.log
+
+# Standard file logs (only if explicitly enabled via addFileLoggers())
 tail -f logs/combined.log
 tail -f logs/error.log
 tail -f logs/debug.log

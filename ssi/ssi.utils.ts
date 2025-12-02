@@ -17,6 +17,17 @@ import differenceWith from "lodash.differencewith";
 /**
  * Maps Netbox IPv4 prefixes to FortiOS firewall address objects
  * Converts CIDR notation to subnet/mask format required by FortiOS
+ *
+ * @param prefixes - Array of Netbox prefixes (filters IPv4 only)
+ * @returns Array of FortiOS firewall address objects
+ *
+ * @example
+ * ```ts
+ * const addresses = mapper([
+ *   { prefix: '10.0.0.0/24', family: { value: 4 }, vlan: { name: 'Production' } }
+ * ]);
+ * // Returns: [{ name: 'netbox_10.0.0.0/24', subnet: '10.0.0.0 255.255.255.0', comment: 'production' }]
+ * ```
  */
 export const mapper = (prefixes: NetboxPrefix[]) => {
   const list: FortiOSFirewallAddress[] = prefixes
@@ -47,6 +58,17 @@ export const mapper = (prefixes: NetboxPrefix[]) => {
 /**
  * Maps Netbox IPv6 prefixes to FortiOS firewall IPv6 address objects
  * Preserves CIDR notation as FortiOS supports it natively for IPv6
+ *
+ * @param prefixes - Array of Netbox prefixes (filters IPv6 only)
+ * @returns Array of FortiOS firewall IPv6 address objects
+ *
+ * @example
+ * ```ts
+ * const addresses = mapper6([
+ *   { prefix: '2001:db8::/32', family: { value: 6 }, display: '2001:db8::/32' }
+ * ]);
+ * // Returns: [{ name: 'netbox6_2001:db8::/32', ip6: '2001:db8::/32' }]
+ * ```
  */
 export const mapper6 = (prefixes: NetboxPrefix[]) => {
   const list6: FortiOSFirewallAddress6[] = prefixes
@@ -69,6 +91,20 @@ export const mapper6 = (prefixes: NetboxPrefix[]) => {
 /**
  * Compares existing and new address group members to identify changes
  * Returns lists of added and removed member names for update operations
+ *
+ * @param existingGroup - Current firewall address group
+ * @param newGroup - Updated firewall address group
+ * @returns Object with added and removed member name arrays
+ * @throws Error if either group is undefined
+ *
+ * @example
+ * ```ts
+ * const changes = getAddGrpMemberChanges(
+ *   { name: 'grp_prod', member: [{ name: 'net_10.0.0.0/24' }] },
+ *   { name: 'grp_prod', member: [{ name: 'net_10.0.1.0/24' }] }
+ * );
+ * // Returns: { added: ['net_10.0.1.0/24'], removed: ['net_10.0.0.0/24'] }
+ * ```
  */
 export const getAddGrpMemberChanges = (
   existingGroup: FortiOSFirewallAddrGrp | FortiOSFirewallAddrGrp6,
