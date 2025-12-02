@@ -1,5 +1,5 @@
 {
-  "version": "0.9.29",
+  "version": "$VERSION",
   "tasks": {
     "dev": "deno run --allow-net --allow-read --allow-write --allow-env --allow-sys=hostname --unsafely-ignore-certificate-errors --watch main.ts",
     "test": "deno test --allow-all --unsafely-ignore-certificate-errors main_test.ts",
@@ -8,7 +8,6 @@
     "debug": "deno run --allow-all --unsafely-ignore-certificate-errors --log-level=debug  --inspect-brk main.ts",
     "update": "deno outdated --update --latest",
     "prerelease": "deno fmt && deno lint"
-
   },
   "imports": {
     "@norskhelsenett/zeniki": "npm:@norskhelsenett/zeniki@^0.5.1",
@@ -22,7 +21,11 @@
     "winston-daily-rotate-file": "npm:winston-daily-rotate-file@^5.0.0"
   },
   "fmt": {
-    "exclude": ["**/*.yaml", "**/*.json", "**/*.yml"]
+    "exclude": [
+      "**/*.yaml",
+      "**/*.json",
+      "**/*.yml"
+    ]
   },
   "nodeModulesDir": "auto"
 }
