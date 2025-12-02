@@ -85,28 +85,8 @@ Sensitive credentials (keep secure):
 
 ```yaml
 ---
-NAM_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-SPLUNK_TOKEN: "12345678-1234-1234-1234-123456789abc"
-```
-
-### Environment Variables
-
-You can also set configuration via environment variables:
-
-```bash
-export DENO_ENV="production"
-export CRON_MODE="false"
-export SSI_NAME="IPAM-Firewall-SSI"
-export SSI_PRIORITY="high"
-export SSI_INTERVAL="300"
-export REQUEST_TIMEOUT="10000"
-export NAM_URL="https://nam.example.com/api"
-export NAM_TOKEN="your-jwt-token-here"
-export SPLUNK_URL="https://splunk.example.com"
-export SPLUNK_TOKEN="your-splunk-hec-token"
-export SPLUNK_INDEX="network_automation"
-export SPLUNK_SOURCE="ipam-firewall-ssi"
-export SPLUNK_SOURCE_TYPE="ipam-firewall-ssi:high"
+NAM_TOKEN: "<api-token-here>"
+SPLUNK_TOKEN: "<api-token-here>"
 ```
 
 ## Usage
@@ -169,33 +149,46 @@ deno task test
 
 ## Priority Levels
 
-- **low**: Syncs less frequently, lower priority integrators
-- **medium**: Standard sync priority
-- **high**: Critical integrators, syncs more frequently
+- **low**: Syncs less frequently, lower priority integrators (recommended
+  interval: 300 seconds)
+- **medium**: Standard sync priority (recommended interval: 180 seconds)
+- **high**: Critical integrators, syncs more frequently (recommended interval:
+  60 seconds)
+
+**Note:** The intervals shown are recommended defaults. Set `SSI_INTERVAL` in
+your configuration to customize the sync interval for your specific deployment
+needs.
 
 ## Logging
 
-Logs are written to multiple destinations based on environment:
+Logs are written to multiple destinations based on configuration:
 
-**Production/Container Mode:**
+**Default Logging (All Environments):**
 
 - **Console**: Real-time output (stdout/stderr)
-- **Splunk HEC**: Real-time forwarding to Splunk (if configured)
+- **Splunk HEC**: Real-time forwarding to Splunk (if `SPLUNK_URL` and
+  `SPLUNK_TOKEN` configured)
 
-**Development Mode (DENO_ENV=development):**
+**Optional File Logging:**
 
-- **Console**: Real-time output
-- **File logs**: Daily rotating logs in `logs/` directory
-  - `combined.log`: All log levels
-  - `warn.log`: Warnings and above
-  - `error.log`: Errors only
-  - `debug.log`: Debug information only
-  - `splunk.log`: Splunk-formatted logs (for testing HEC locally)
-- **Splunk HEC**: Real-time forwarding to Splunk (if configured)
+File logging can be enabled by explicitly calling `addFileLoggers()` in the
+code. When enabled, creates daily rotating logs in `logs/` directory:
 
-**Note:** File logging is automatically disabled in production to avoid
-container filesystem issues. In Docker/Kubernetes, use `docker logs` or
-`kubectl logs` to view output.
+- `combined.log`: All log levels
+- `warn.log`: Warnings and above
+- `error.log`: Errors only
+- `debug.log`: Debug information only
+
+**Optional Splunk File Logging (Development Only):**
+
+Splunk-formatted file logging can be enabled by calling `addSplunkFileLogger()`
+in development mode:
+
+- `splunk.log`: Splunk HEC JSON format (for testing Splunk ingestion locally)
+
+**Note:** File logging is disabled by default to avoid container filesystem
+issues. In Docker/Kubernetes, use `docker logs` or `kubectl logs` to view
+output.
 
 **Log Configuration:**
 

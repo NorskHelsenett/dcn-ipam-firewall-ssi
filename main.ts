@@ -13,35 +13,49 @@ import { SSIWorker } from "./ssi/ssi.worker.ts";
 import logger from "./ssi/loggers/logger.ts";
 import packageInfo from "./deno.json" with { type: "json" };
 
+/** Path to secrets configuration file */
 const SECRETS_PATH = Deno.env.get("SECRETS_PATH") ?? undefined;
+/** Path to application configuration file */
 const CONFIG_PATH = Deno.env.get("CONFIG_PATH") ?? undefined;
 
+/** Environment loader for secrets and config */
 const envLoader = new EnvLoader(SECRETS_PATH, CONFIG_PATH);
+/** SSI service name identifier */
 const SSI_NAME = Deno.env.get("SSI_NAME") ?? "SSI_NAME_MISSING";
+/** User-Agent header for API requests */
 const USER_AGENT = `${SSI_NAME}/${packageInfo.version}`;
 Deno.env.set("USER_AGENT", USER_AGENT);
 
+/** Interval ID for continuous mode scheduling */
 let INTERVAL_ID: number | undefined;
-const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low"; // [low | medium | high]
-const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") as string) ?? 900; // In seconds
+/** Execution priority level (low, medium, high) */
+const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low";
+/** Sync interval in seconds for continuous mode */
+const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") as string) ?? 900;
+/** Request timeout for API calls and log flushing in milliseconds */
 const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 3000;
 envLoader.close();
 /**
  * Starts the SSI worker with mode-specific execution behavior
+ * One-shot mode (CRON_MODE != "true"): Runs once and exits (for CronJobs)
+ * Continuous mode (CRON_MODE = "true"): Runs continuously with interval scheduling (for Pods)
  *
- * One-shot mode (CRON_MODE != "true"):
- * - Executes synchronization once
- * - Waits for completion
- * - Exits with code 0 on success, 1 on error
- * - Ideal for Kubernetes CronJobs
+ * @returns Promise that resolves when worker initialization completes
+ * @throws Error if worker initialization or execution fails
  *
- * Continuous mode (CRON_MODE = "true"):
- * - Runs immediately on start
- * - Schedules periodic synchronization at SSI_INTERVAL
- * - Continues running until manually stopped
- * - Ideal for long-running containers
+ * @example
+ * ```ts
+ * // One-shot mode (default)
+ * Deno.env.set("CRON_MODE", "false");
+ * await start(); // Runs once, exits with code 0 or 1
+ *
+ * // Continuous mode
+ * Deno.env.set("CRON_MODE", "true");
+ * Deno.env.set("SSI_INTERVAL", "300");
+ * await start(); // Runs every 300 seconds
+ * ```
  */
 const start = async (): Promise<void> => {
   try {

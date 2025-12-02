@@ -14,7 +14,23 @@ import logger from "../loggers/logger.ts";
 
 /**
  * Deploys or updates a security group on NSX with IP addresses from Netbox
- * Creates the group if it doesn't exist, or patches it with IP address changes
+ * Creates the group if it doesn't exist, patches with IP changes if it does
+ *
+ * @param nsx - VMware NSX driver instance for API communication
+ * @param securityGroupObject - Security group configuration object
+ * @param prefixes - Array of Netbox IP prefixes to deploy
+ * @param globalManager - Whether to use global manager endpoint
+ * @throws Error if deployment or update operations fail
+ *
+ * @example
+ * ```ts
+ * await deploySecurityGroup(
+ *   nsxDriver,
+ *   { display_name: 'nsg-prod', expression: [...] },
+ *   [{ prefix: '10.0.0.0/24' }],
+ *   false
+ * );
+ * ```
  */
 export const deploySecurityGroup = async (
   nsx: VMWareNSXDriver,
@@ -149,6 +165,18 @@ export const deploySecurityGroup = async (
 /**
  * Creates a VMware NSX security group object from Netbox integrator configuration
  * Includes IP address expressions and optional scope/tag metadata
+ *
+ * @param integrator - Netbox integrator configuration
+ * @param prefixes - Array of Netbox IP prefixes
+ * @returns VMwareNSXGroup object ready for deployment
+ *
+ * @example
+ * ```ts
+ * const group = createSecurityGroup(
+ *   { nsx_group_name: 'prod', nsx_group_scope: 'env', nsx_group_tag: 'production' },
+ *   [{ prefix: '10.0.0.0/24' }]
+ * );
+ * ```
  */
 export const createSecurityGroup = (
   integrator: NAMNetboxIntegrator,

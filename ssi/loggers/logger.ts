@@ -15,51 +15,70 @@ import {
 } from "@norskhelsenett/zeniki";
 import https from "node:https";
 
+/** Splunk HEC logger transport instance */
 let hecLogger: WinstonHecLogger | undefined;
+/** Combined file logger transport */
 let combinedFileLogger: DailyRotateFile | undefined;
+/** Warning level file logger transport */
 let warningFileLogger: DailyRotateFile | undefined;
+/** Error level file logger transport */
 let errorFileLogger: DailyRotateFile | undefined;
+/** Debug level file logger transport */
 let debugFileLogger: DailyRotateFile | undefined;
+/** Splunk-formatted file logger transport */
 let splunkFileLogger: DailyRotateFile | undefined;
 
+/** Path to secrets configuration file */
 const SECRETS_PATH = Deno.env.get("SECRETS_PATH") ?? undefined;
+/** Path to application configuration file */
 const CONFIG_PATH = Deno.env.get("CONFIG_PATH") ?? undefined;
 
+/** Environment loader for secrets and config */
 const envLoader = new EnvLoader(SECRETS_PATH, CONFIG_PATH);
 
+/** HTTP request timeout in milliseconds (default: 10000) */
 const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 10000;
 
+/** HTTPS agent with certificate verification for production */
 const _HTTPS_AGENT = new https.Agent({
-  rejectUnauthorized: Deno.env.get("DENO_ENV")! != "development", // Set to false to disable certificate verification
+  rejectUnauthorized: Deno.env.get("DENO_ENV")! != "development",
   keepAlive: true,
   timeout: REQUEST_TIMEOUT,
 });
 
+/** Splunk HEC endpoint URL */
 const SPLUNK_URL = Deno.env.get("SPLUNK_URL") ?? undefined;
+/** Splunk HEC authentication token */
 const SPLUNK_TOKEN = Deno.env.get("SPLUNK_TOKEN") ?? undefined;
 
+/** Directory for log files (default: "logs") */
 const FILELOG_DIR = Deno.env.get("FILELOG_DIR")
   ? Deno.env.get("FILELOG_DIR")
   : "logs";
 
+/** Maximum size per log file (default: "50m") */
 const FILELOG_SIZE = Deno.env.get("FILELOG_SIZE")
   ? Deno.env.get("FILELOG_SIZE")
-  : "50m"; // 50 megabytes
+  : "50m";
 
+/** Log file retention period (default: "30d") */
 const FILELOG_DAYS = Deno.env.get("FILELOG_DAYS")
   ? Deno.env.get("FILELOG_DAYS")
-  : "30d"; // 30 days
+  : "30d";
 
+/** Splunk index for log events */
 const SPLUNK_INDEX = Deno.env.get("SPLUNK_INDEX") ?? undefined;
+/** Splunk source identifier (default: "ssi") */
 const SPLUNK_SOURCE = Deno.env.get("SPLUNK_SOURCE") ?? "ssi";
+/** Splunk source type (default: "ipam-firewall-ssi:high") */
 const SPLUNK_SOURCE_TYPE = Deno.env.get("SPLUNK_SOURCE_TYPE") ??
   "ipam-firewall-ssi:high";
 envLoader.close();
 /**
  * Determines log level based on environment mode
- * Returns 'debug' in development, 'info' in production
+ * @returns 'debug' in development, 'info' in production
  */
 const logLevel = () => {
   return isDevMode() ? "debug" : "info";
@@ -106,14 +125,16 @@ const splunkHECFormat = winston.format.combine(
 );
 
 /**
- * Removes all log levels except for debug (http access) from logs.
+ * Filters logs to include only debug level
+ * @returns Winston format function that passes debug logs only
  */
 const debugFilter = winston.format((info, _opts) => {
   return info.level === "debug" ? info : false;
 });
 
 /**
- * Removes log level notice (http access) from logs.
+ * Filters out notice level logs
+ * @returns Winston format function that excludes notice level
  */
 const _noHttpFilter = winston.format((info, _opts) => {
   return info.level === "info" ||
@@ -125,9 +146,8 @@ const _noHttpFilter = winston.format((info, _opts) => {
 });
 
 /**
- * Transport configurations for Winston logger
- * Base transport includes only console output
- * File transports are added dynamically in development mode via addFileLogger()
+ * Winston logger transports array
+ * Initially contains only console transport; file transports added via addFileLoggers()
  */
 const transports = [
   // Allow the use the console to print the messages
@@ -143,8 +163,7 @@ const transports = [
 ];
 
 /**
- * Main Winston logger instance
- * Configured with custom log levels, formats, and transports
+ * Main Winston logger instance with custom levels, formats, and transports
  */
 const logger = winston.createLogger({
   level: logLevel(),
@@ -163,7 +182,7 @@ logger.on("error", (error: Error) => {
 
 /**
  * Adds Splunk HEC logger transport if credentials are configured
- * Enables real-time log forwarding to Splunk for monitoring
+ * @throws Error if HEC logger initialization fails
  */
 const addHecLogger = () => {
   try {
@@ -201,8 +220,7 @@ const addHecLogger = () => {
 };
 
 /**
- * Removes Splunk HEC logger transport
- * Cleans up the HEC logger instance and removes it from Winston transports
+ * Removes and disposes Splunk HEC logger transport
  */
 export const removeHecLogger = () => {
   try {
@@ -226,20 +244,12 @@ export const removeHecLogger = () => {
 };
 
 /**
- * Adds file-based logger transports for development mode
- * Creates daily rotating log files for combined, warning, error, and debug logs
- * Only active when DENO_ENV=development to avoid container filesystem issues
- *
- * Log files created:
- * - combined.log: All log levels
- * - warn.log: Warning level and above
- * - error.log: Error level only
- * - debug.log: Debug level only
+ * Adds file-based logger transports (combined, warning, error, debug)
+ * Creates daily rotating logs when explicitly called
  */
 export const addFileLoggers = () => {
   try {
     if (
-      isDevMode() &&
       !combinedFileLogger &&
       !warningFileLogger &&
       !errorFileLogger &&
@@ -335,8 +345,6 @@ export const addFileLoggers = () => {
 
 /**
  * Removes all file-based logger transports
- * Cleans up combined, warning, error, and debug file loggers
- * Useful for switching from file logging to container-based logging
  */
 export const removeFileLoggers = () => {
   try {
@@ -372,15 +380,13 @@ export const removeFileLoggers = () => {
 
 /**
  * Adds Splunk-formatted file logger for development mode
- * Creates a daily rotating log file with Splunk HEC JSON format
- * Only active when DENO_ENV=development
- * Useful for testing Splunk ingestion locally before deploying
+ * Creates daily rotating logs in Splunk HEC JSON format for local testing
  */
 export const addSplunkFileLogger = () => {
   try {
     if (isDevMode() && !splunkFileLogger) {
       splunkFileLogger = new DailyRotateFile({
-        level: "info",
+        level: "debug",
         filename: "splunk-%DATE%.log",
         dirname: FILELOG_DIR,
         datePattern: "YYYYMMDD",
@@ -411,7 +417,6 @@ export const addSplunkFileLogger = () => {
 
 /**
  * Removes Splunk-formatted file logger transport
- * Cleans up the Splunk file logger instance
  */
 export const removeSplunkFileLogger = () => {
   try {
@@ -433,12 +438,15 @@ export const removeSplunkFileLogger = () => {
   }
 };
 
-// Initialize default loggers
-// - HEC logger: Added if SPLUNK_URL and SPLUNK_TOKEN are configured
-// - File loggers: Added only in development mode to avoid container filesystem issues
+/**
+ * Initialize default loggers
+ * - HEC logger: Added if SPLUNK_URL and SPLUNK_TOKEN configured
+ * - Splunk file logger: Added in development mode only
+ */
 addHecLogger();
-addFileLoggers();
+addSplunkFileLogger();
 
 logger.debug(`ipam-firewall-ssi: Logger initialized at ${logLevel()} level`);
 
+/** Configured Winston logger instance */
 export default logger;
