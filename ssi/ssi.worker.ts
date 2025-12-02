@@ -155,7 +155,6 @@ export class SSIWorker {
                 `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
               );
             }
-            continue;
           }
 
           const prefixes = mapper(netboxPrefixes);

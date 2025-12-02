@@ -64,8 +64,8 @@ jobs:
 
       - name: Update versions
         run: |
-          jq '.version = "${{ steps.version.outputs.VERSION }}"'  deno.json > tmp.json && mv tmp.json deno.json
-          ./yq e -i '.version = ${{ steps.version.outputs.VERSION }},.appVersion = ${{ steps.version.outputs.VERSION }}' charts/dcn-ipam-firewall-ssi/Chart.yaml
+          jq '.version = "$VERSION"'  deno.json > tmp.json && mv tmp.json deno.json
+          ./yq e -i '.version = "$VERSION",.appVersion = "$VERSION"' charts/dcn-ipam-firewall-ssi/Chart.yaml
 
       - name: Commit version updates
         run: |
@@ -73,7 +73,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add deno.json
           git add charts/dcn-ipam-firewall-ssi/Chart.yaml
-          git commit -m "chore: Updated version to ${{ steps.version.outputs.VERSION }}" || true
+          git commit -m "chore: Updated version to ${{ env.VERSION }}" || true
           git push origin ${{ github.event.repository.default_branch }}
 
   create-oci-image:
