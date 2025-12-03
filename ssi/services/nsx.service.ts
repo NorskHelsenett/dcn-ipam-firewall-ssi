@@ -7,7 +7,7 @@ import {
   isDevMode,
   NAMNetboxIntegrator,
   NetboxPrefix,
-  VMWareNSXDriver,
+  VMwareNSXDriver,
   VMwareNSXGroup,
 } from "@norskhelsenett/zeniki";
 import logger from "../loggers/logger.ts";
@@ -33,7 +33,7 @@ import logger from "../loggers/logger.ts";
  * ```
  */
 export const deploySecurityGroup = async (
-  nsx: VMWareNSXDriver,
+  nsx: VMwareNSXDriver,
   securityGroupObject: VMwareNSXGroup,
   prefixes: NetboxPrefix[],
   globalManager?: boolean,
