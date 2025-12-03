@@ -56,7 +56,6 @@ export class SSIWorker {
   private _firewall: FortiOSDriver | null = null;
   private _nsx: VMwareNSXDriver | null = null;
 
-
   /**
    * Initializes the worker and sets up the NAM API driver
    */
@@ -253,7 +252,7 @@ export class SSIWorker {
           );
         }
         integrators.length = 0;
-  
+
         this._running = false;
         this._resetDriverInstances();
         logger.debug("ipam-firewall-ssi: Worker task completed...");
