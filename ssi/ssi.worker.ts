@@ -5,12 +5,13 @@
 
 import {
   FortiOSDriver,
+  HTTPError,
   isDevMode,
   NAMAPIEndpoint,
   NAMNetboxIntegrator,
   NAMv2Driver,
   NetboxDriver,
-  VMWareNSXDriver,
+  VMwareNSXDriver,
 } from "@norskhelsenett/zeniki";
 import https from "node:https";
 import { mapper, mapper6 } from "./ssi.utils.ts";
@@ -53,7 +54,7 @@ export class SSIWorker {
   private static _nms: NAMv2Driver;
   private _ipam: NetboxDriver | null = null;
   private _firewall: FortiOSDriver | null = null;
-  private _nsx: VMWareNSXDriver | null = null;
+  private _nsx: VMwareNSXDriver | null = null;
 
   /**
    * Initializes the worker and sets up the NAM API driver
@@ -136,7 +137,7 @@ export class SSIWorker {
 
           const netboxPrefixes = (
             await this._ipam.prefixes.getPrefixes(netboxQuery, true).catch(
-              (error) => {
+              (error: HTTPError) => {
                 logger.warning(
                   `ipam-firewall-ssi: Could not retrieve prefixes from IPAM ${this?._ipam?.getHostname()} due to ${error.message} `,
                   {
@@ -311,7 +312,7 @@ export class SSIWorker {
     const authString = `${username}:${password}`;
     const encodedAuth = btoa(authString);
 
-    return new VMWareNSXDriver({
+    return new VMwareNSXDriver({
       baseURL: endpoint?.url?.replace("/api/v1", ""),
       headers: {
         "User-Agent": USER_AGENT,
