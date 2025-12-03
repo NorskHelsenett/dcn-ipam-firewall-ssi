@@ -234,8 +234,8 @@ tail -f logs/debug.log
 8. Push to your fork: `git push origin feature/my-feature`
 9. Create a Pull Request
 
-**Note:** All contributions must pass `deno fmt`, `deno lint`, and End-to-end (E2E) tests locally before
-being accepted.
+**Note:** All contributions must pass `deno fmt`, `deno lint`, and End-to-end
+(E2E) tests locally before being accepted.
 
 ## Code Style
 
