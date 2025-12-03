@@ -229,11 +229,12 @@ tail -f logs/debug.log
 3. Make your changes and test thoroughly
 4. Run linter: `deno lint`
 5. Format code: `deno fmt`
-6. Commit with descriptive messages
-7. Push to your fork: `git push origin feature/my-feature`
-8. Create a Pull Request
+6. Run e2e tests: `deno task test -- e2e`
+7. Commit with descriptive messages
+8. Push to your fork: `git push origin feature/my-feature`
+9. Create a Pull Request
 
-**Note:** All contributions must pass `deno fmt` and `deno lint` checks before
+**Note:** All contributions must pass `deno fmt`, `deno lint`, and End-to-end (E2E) tests locally before
 being accepted.
 
 ## Code Style
