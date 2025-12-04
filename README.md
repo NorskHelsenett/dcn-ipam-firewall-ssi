@@ -44,6 +44,21 @@ cp examples/secrets.yaml.example secrets/secrets.yaml
 deno cache main.ts
 ```
 
+### Certificate Configuration
+
+For production use with your own infrastructure, replace the CA certificate
+bundle:
+
+```bash
+# Replace ca_chain.crt with your organization's CA certificates
+# This file is used for SSL/TLS certificate verification
+cp /path/to/your/ca-bundle.crt ./ca_chain.crt
+```
+
+**Note:** The included `ca_chain.crt` contains certificate authority chain from
+Norsk Helsenett SF. For production environments, replace this file with your
+organization's CA certificate bundle to ensure proper SSL/TLS verification.
+
 ## Configuration
 
 Example configuration files are provided in the `examples/` folder. Copy and
@@ -97,7 +112,7 @@ SPLUNK_TOKEN: "<api-token-here>"
 # Development mode (with auto-reload on file changes)
 deno task dev
 
-# Production mode
+# Production mode (recommended - uses certificate verification)
 deno task run
 
 # One-shot mode (runs once and exits - for CronJobs, default if CRON_MODE not set)
@@ -116,7 +131,16 @@ export CONFIG_PATH="/path/to/config.yaml"
 export SECRETS_PATH="/path/to/secrets.yaml"
 deno task dev   # for development
 deno task run   # for production
+
+# LAST RESORT: Production without certificate verification
+# Only use when CA certificates are unavailable
+deno task unsafe
 ```
+
+**⚠️ Important:** `deno task unsafe` disables SSL certificate verification and
+should **only** be used as a last resort in production environments where CA
+certificates are unavailable. Always prefer `deno task run` with proper
+certificate configuration.
 
 ### Execution Modes
 

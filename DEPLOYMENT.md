@@ -110,10 +110,14 @@ The `docker-compose.yml` includes:
 
 - Based on official Deno image
 - Runs tests during build to validate configuration
-- Includes NHN internal CA chain for SSL verification
+- Uses `ca_chain.crt` for SSL/TLS certificate verification
 - Runs as non-root user (deno:1993)
-- Cleans up secrets after build for security
 - Configurable paths via `CONFIG_PATH` and `SECRETS_PATH` environment variables
+
+**Note:** Replace `ca_chain.crt` with your organization's CA certificate bundle
+before building the Docker image. The default command uses `deno task run` which
+requires valid certificates. Use `deno task unsafe` only as a last resort when
+CA certificates are unavailable.
 
 ### Kubernetes (Basic Manifests)
 

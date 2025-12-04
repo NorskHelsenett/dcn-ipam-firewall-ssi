@@ -31,9 +31,9 @@ let INTERVAL_ID: number | undefined;
 /** Execution priority level (low, medium, high) */
 const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low";
 /** Sync interval in seconds for continuous mode */
-const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") as string) ?? 900;
+const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") ?? "900");
 /** Request timeout for API calls and log flushing in milliseconds */
-const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
+const _REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 3000;
 envLoader.close();
@@ -67,14 +67,9 @@ const start = async (): Promise<void> => {
       );
       await ssiWorker.work(SSI_PRIORITY);
       logger.debug(
-        `ipam-firewall-ssi: Waiting to flush logs in ${
-          REQUEST_TIMEOUT / 1000
-        } seconds`,
+        `ipam-firewall-ssi: Waiting to flush logs before exiting.`,
       );
-      // Added because Splunk logging can be slow...
-      setTimeout(() => {
-        Deno.exit(0);
-      }, REQUEST_TIMEOUT);
+      Deno.exit(0);
     } else {
       logger.info(
         `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY} running every ${SSI_INTERVAL} seconds...`,
@@ -88,20 +83,26 @@ const start = async (): Promise<void> => {
     if (INTERVAL_ID) {
       clearInterval(INTERVAL_ID);
     }
-    logger.error(
-      `ipam-firewall-ssi: Worker error occurred on ${Deno.hostname()},  ${
-        (error as Error).message
-      }`,
-      {
-        component: "main",
-        method: "start",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
-    // Added because Splunk logging can be slow...
-    setTimeout(() => {
-      Deno.exit(1);
-    }, REQUEST_TIMEOUT);
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error occurred on ${Deno.hostname()},  ${error.message}`,
+        {
+          component: "main",
+          method: "start",
+          error: isDevMode() ? error : error.message,
+        },
+      );
+    } else {
+      logger.error(
+        `ipam-firewall-ssi: Unknown error occurred on ${Deno.hostname()}`,
+        {
+          component: "main",
+          method: "start",
+          error: error,
+        },
+      );
+    }
+    Deno.exit(1);
   }
 };
 

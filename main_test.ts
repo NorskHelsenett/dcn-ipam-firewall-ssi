@@ -266,7 +266,7 @@ if (Deno.args[0] === "e2e") {
     const NAM_TEST_INT = Deno.env.get("NAM_TEST_INT");
     const SSI_NAME = Deno.env.get("SSI_NAME");
     const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY");
-    const SSI_INTERVAL = Deno.env.get("SSI_INTERVAL");
+    const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") ?? "900");
 
     assertExists(NAM_URL);
     assertExists(NAM_TOKEN);

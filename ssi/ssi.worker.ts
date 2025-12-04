@@ -13,7 +13,6 @@ import {
   NetboxDriver,
   VMwareNSXDriver,
 } from "@norskhelsenett/zeniki";
-import https from "node:https";
 import { mapper, mapper6 } from "./ssi.utils.ts";
 import packageInfo from "../deno.json" with { type: "json" };
 import {
@@ -29,21 +28,13 @@ import logger from "./loggers/logger.ts";
 const SSI_NAME = Deno.env.get("SSI_NAME") ?? "SSI_NAME_MISSING";
 const USER_AGENT = `${SSI_NAME}/${packageInfo.version}`;
 Deno.env.set("USER_AGENT", USER_AGENT);
-const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
+const _REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 10000;
-
-const _HTTPS_AGENT = new https.Agent({
-  rejectUnauthorized: Deno.env.get("DENO_ENV")! != "development", // Set to false to disable certificate verification
-  keepAlive: true,
-  timeout: REQUEST_TIMEOUT,
-});
 
 const NAM_URL = Deno.env.get("NAM_URL");
 const NAM_TOKEN = Deno.env.get("NAM_TOKEN");
 const NAM_TEST_INT = Deno.env.get("NAM_TEST_INT");
-
-let RUN_COUNTER = 0;
 
 /**
  * Main worker class that orchestrates IPAM to firewall synchronization
@@ -55,6 +46,7 @@ export class SSIWorker {
   private _ipam: NetboxDriver | null = null;
   private _firewall: FortiOSDriver | null = null;
   private _nsx: VMwareNSXDriver | null = null;
+  private _run_counter = 0;
 
   /**
    * Initializes the worker and sets up the NAM API driver
@@ -95,23 +87,49 @@ export class SSIWorker {
               {
                 expand: 1,
               },
-            ),
+            ).catch((error) => {
+              logger.error(
+                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()},  ${error.message} @ ${NAM_URL}`,
+                {
+                  component: "worker",
+                  method: "getNetboxIntegrator",
+                  error: isDevMode() ? error : error.message,
+                },
+              );
+              return;
+            }),
           ]
           : ((
             await SSIWorker._nms.netbox_integrators.getNetboxIntegrators({
               expand: 1,
               sync_priority: priority,
+            }).catch((error) => {
+              logger.error(
+                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()},  ${error.message} @ ${NAM_URL}`,
+                {
+                  component: "worker",
+                  method: "getNetboxIntegrator",
+                  error: isDevMode() ? error : error.message,
+                },
+              );
+              return;
             })
-          )?.results as NAMNetboxIntegrator[]);
+          )?.results as NAMNetboxIntegrator[]) || [];
 
         for (const integrator of integrators) {
-          if (!integrator?.enabled) {
+          if (!integrator || !integrator?.enabled) {
             if (isDevMode() && !NAM_TEST_INT) {
               logger.debug(
                 `ipam-firewall-ssi: Skipping disabled integrator '${integrator?.name}'...`,
+                {
+                  component: "worker",
+                  method: "work",
+                },
               );
             }
-            if (!NAM_TEST_INT) {
+            if (NAM_TEST_INT && integrator) {
+              // run even if integrator is disable, as it is for testing.
+            } else {
               continue;
             }
           }
@@ -121,10 +139,10 @@ export class SSIWorker {
             this._ipam.dispose();
             this._ipam = null;
           }
+
           this._ipam = this._configureIPAM(
             integrator?.netbox_endpoint as NAMAPIEndpoint,
           );
-
           const netboxQuery = new URLSearchParams(
             integrator?.query?.split("?")[1],
           );
@@ -132,6 +150,10 @@ export class SSIWorker {
           if (isDevMode()) {
             logger.debug(
               "ipam-firewall-ssi: Preparing IP prefix(es) from IPAM...",
+              {
+                component: "worker",
+                method: "work",
+              },
             );
           }
 
@@ -154,6 +176,10 @@ export class SSIWorker {
             if (isDevMode()) {
               logger.info(
                 `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
+                {
+                  component: "worker",
+                  method: "work",
+                },
               );
             }
           }
@@ -166,7 +192,10 @@ export class SSIWorker {
             integrator?.fortigate_endpoints.length > 0
           ) {
             if (isDevMode()) {
-              logger.debug("ipam-firewall-ssi: Deploying to firewall(s)...");
+              logger.debug("ipam-firewall-ssi: Deploying to firewall(s)...", {
+                component: "worker",
+                method: "work",
+              });
             }
             for (const fortigate of integrator.fortigate_endpoints) {
               const firewall = fortigate.endpoint;
@@ -175,6 +204,10 @@ export class SSIWorker {
               if (!fortigate || !vdoms || vdoms.length === 0) {
                 logger.warning(
                   `ipam-firewall-ssi: Invalid Fortigate endpoint configured for '${integrator.name}'. Check your configuration in NAM.`,
+                  {
+                    component: "worker",
+                    method: "work",
+                  },
                 );
                 continue;
               }
@@ -210,7 +243,10 @@ export class SSIWorker {
           }
 
           if (isDevMode()) {
-            logger.debug("ipam-firewall-ssi: Deploying to VMware NSX(es)...");
+            logger.debug("ipam-firewall-ssi: Deploying to VMware NSX(es)...", {
+              component: "worker",
+              method: "work",
+            });
           }
           if (integrator?.create_nsx_group && integrator?.nsx_endpoints) {
             const securityGroup = await createSecurityGroup(
@@ -238,6 +274,10 @@ export class SSIWorker {
           if (isDevMode()) {
             logger.debug(
               `ipam-firewall-ssi: Cleaning up arrays for '${integrator?.name}' (netboxPrefixes: ${netboxPrefixes.length}, prefixes: ${prefixes.length}, prefixes6: ${prefixes6.length})`,
+              {
+                component: "worker",
+                method: "work",
+              },
             );
           }
           netboxPrefixes.length = 0;
@@ -249,26 +289,34 @@ export class SSIWorker {
         if (isDevMode()) {
           logger.debug(
             `ipam-firewall-ssi: Cleaning up integrators array (${integrators.length} integrators processed)`,
+            {
+              component: "worker",
+              method: "work",
+            },
           );
         }
         integrators.length = 0;
 
         this._running = false;
         this._resetDriverInstances();
-        logger.debug("ipam-firewall-ssi: Worker task completed...");
+        logger.debug("ipam-firewall-ssi: Worker task completed...", {
+          component: "worker",
+          method: "work",
+        });
+        // Should be a console log only, as it should not be logged and stored.
         console.log(
-          `ipam-firewall-ssi: Completed run number ${(RUN_COUNTER += 1)}`,
+          `ipam-firewall-ssi: Completed run number ${(this._run_counter += 1)}`,
         );
         return 0;
       } else {
-        logger.warning("ipam-firewall-ssi: Worker task already running...");
+        logger.warning("ipam-firewall-ssi: Worker task already running...", {
+          component: "worker",
+          method: "work",
+        });
         return 7;
       }
-    } catch (error) {
+    } catch (error: unknown) {
       this._running = false;
-      console.log(
-        `ipam-firewall-ssi: Completed run number ${(RUN_COUNTER += 1)}`,
-      );
       throw error;
     }
   }
@@ -278,7 +326,7 @@ export class SSIWorker {
    */
   private _configureIPAM(endpoint: NAMAPIEndpoint): NetboxDriver {
     return new NetboxDriver({
-      baseURL: endpoint.url.replace(new RegExp("/" + "$"), ""),
+      baseURL: endpoint.url.replace(/\/$/, ""),
       headers: {
         "User-Agent": USER_AGENT,
         "Content-Type": "application/json",
@@ -339,11 +387,16 @@ export class SSIWorker {
         this._nsx = null;
       }
     } catch (error: unknown) {
-      logger.warning(
-        `ipam-firewall-ssi: Error could not reset one or more driver instances, ${
-          (error as Error).message
-        }`,
-      );
+      if (error instanceof Error) {
+        logger.warning(
+          `ipam-firewall-ssi: Error could not reset one or more driver instances, ${error.message}`,
+          {
+            component: "worker",
+            method: "work",
+            error: isDevMode() ? error : error.message,
+          },
+        );
+      }
     }
   }
 }

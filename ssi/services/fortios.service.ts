@@ -48,13 +48,13 @@ export const deployAddresses = async (
       const groups: FortiOSFirewallAddrGrp[] | undefined = (
         await firewall.addrgrp
           .getAddressGroups({ vdom: vdom.name })
-          .catch((error: unknown) => {
+          .catch((error: Error) => {
             logger.warning(
               `ipam-firewall-ssi: Failed getting IPv4 address groups from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               {
                 component: "fortios.service",
                 method: "deployAddresses",
-                error: isDevMode() ? error : (error as Error).message,
+                error: isDevMode() ? error : error?.message,
               },
             );
           })
@@ -63,13 +63,13 @@ export const deployAddresses = async (
       const addresses: FortiOSFirewallAddress[] | undefined = (
         await firewall.address
           .getAddresses({ vdom: vdom.name })
-          .catch((error: unknown) => {
+          .catch((error: Error) => {
             logger.warning(
               `ipam-firewall-ssi: Failed getting IPv4 addresses from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               {
                 component: "fortios.service",
                 method: "deployAddresses",
-                error: isDevMode() ? error : (error as Error).message,
+                error: isDevMode() ? error : error?.message,
               },
             );
           })
@@ -101,13 +101,13 @@ export const deployAddresses = async (
                 `ipam-firewall-ssi: Created IPv4 address '${prefix.name}' from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               );
             })
-            .catch((error: unknown) => {
+            .catch((error: Error) => {
               logger.error(
                 `ipam-firewall-ssi: Failed to create IPv4 address '${prefix.name}' from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                 {
                   component: "fortios.service",
                   method: "deployAddresses",
-                  error: isDevMode() ? error : (error as Error).message,
+                  error: isDevMode() ? error : error?.message,
                 },
               );
             });
@@ -144,13 +144,13 @@ export const deployAddresses = async (
                 },
               );
             })
-            .catch((error: unknown) => {
+            .catch((error: Error) => {
               logger.error(
                 `ipam-firewall-ssi: Creation of IPv4 address group failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                 {
                   component: "fortios.service",
                   method: "deployAddresses",
-                  error: isDevMode() ? error : (error as Error).message,
+                  error: isDevMode() ? error : error?.message,
                 },
               );
             });
@@ -212,14 +212,14 @@ export const deployAddresses = async (
                   },
                 );
               })
-              .catch((error: unknown) => {
+              .catch((error: Error) => {
                 logger.error(
                   `ipam-firewall-ssi: Updated IPv4 address group failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                   {
                     component: "fortios.service",
                     method: "deployAddresses",
                     ...meta,
-                    error: isDevMode() ? error : (error as Error).message,
+                    error: isDevMode() ? error : error?.message,
                   },
                 );
               });
@@ -248,13 +248,13 @@ export const deployAddresses = async (
                       },
                     );
                   })
-                  .catch((error: unknown) => {
+                  .catch((error: Error) => {
                     logger.error(
                       `ipam-firewall-ssi: Remove IPv4 address '${removed_prefix_name}' failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                       {
                         component: "fortios.service",
                         method: "deployAddresses",
-                        error: isDevMode() ? error : (error as Error).message,
+                        error: isDevMode() ? error : error?.message,
                       },
                     );
                   });
@@ -304,13 +304,13 @@ export const deployAddresses6 = async (
       const groups: FortiOSFirewallAddrGrp6[] | undefined = (
         await firewall.addrgrp6
           .getAddressGroups6({ vdom: vdom.name })
-          .catch((error: unknown) => {
+          .catch((error: Error) => {
             logger.warning(
               `ipam-firewall-ssi: Failed getting IPv6 address groups from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               {
                 component: "fortios.service",
                 method: "deployAddresses6",
-                error: isDevMode() ? error : (error as Error).message,
+                error: isDevMode() ? error : error?.message,
               },
             );
           })
@@ -319,13 +319,13 @@ export const deployAddresses6 = async (
       const addresses = (
         await firewall.address6
           .getAddresses6({ vdom: vdom.name })
-          .catch((error: unknown) => {
+          .catch((error: Error) => {
             logger.warning(
               `ipam-firewall-ssi: Failed getting IPv6 addresses from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               {
                 component: "fortios.service",
                 method: "deployAddresses6",
-                error: isDevMode() ? error : (error as Error).message,
+                error: isDevMode() ? error : error?.message,
               },
             );
           })
@@ -356,13 +356,13 @@ export const deployAddresses6 = async (
                 `ipam-firewall-ssi: Created IPv6 address '${prefix.name}' from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
               );
             })
-            .catch((error: unknown) => {
+            .catch((error: Error) => {
               logger.error(
                 `ipam-firewall-ssi: Failed to create IPv6 address '${prefix.name}' from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                 {
                   component: "fortios.service",
                   method: "deployAddresses",
-                  error: isDevMode() ? error : (error as Error).message,
+                  error: isDevMode() ? error : error?.message,
                 },
               );
             });
@@ -399,13 +399,13 @@ export const deployAddresses6 = async (
                 },
               );
             })
-            .catch((error: unknown) => {
+            .catch((error: Error) => {
               logger.error(
                 `ipam-firewall-ssi: Creation of IPv6 address group failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                 {
                   component: "fortios.service",
                   method: "deployAddresses6",
-                  error: isDevMode() ? error : (error as Error).message,
+                  error: isDevMode() ? error : error?.message,
                 },
               );
             });
@@ -465,14 +465,14 @@ export const deployAddresses6 = async (
                   },
                 );
               })
-              .catch((error: unknown) => {
+              .catch((error: Error) => {
                 logger.error(
                   `ipam-firewall-ssi: Updated IPv6 address group failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                   {
                     component: "fortios.service",
                     method: "deployAddresses6",
                     ...meta,
-                    error: isDevMode() ? error : (error as Error).message,
+                    error: isDevMode() ? error : error?.message,
                   },
                 );
               });
@@ -504,13 +504,13 @@ export const deployAddresses6 = async (
                       },
                     );
                   })
-                  .catch((error: unknown) => {
+                  .catch((error: Error) => {
                     logger.error(
                       `ipam-firewall-ssi: Remove IPv6 address '${removed_prefix_name}' failed from '${integrator.name}' on '${firewall.getHostname()}' vdom '${vdom.name}'`,
                       {
                         component: "fortios.service",
                         method: "deployAddresses6",
-                        error: isDevMode() ? error : (error as Error).message,
+                        error: isDevMode() ? error : error?.message,
                       },
                     );
                   });
