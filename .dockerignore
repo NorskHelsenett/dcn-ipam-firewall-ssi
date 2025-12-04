@@ -10,6 +10,8 @@ npm-debug.log
 **/kubernetes
 # Secrets and more
 ipam-firewall-ssi.yaml
+config/*
+secrets/*
 secrets.yaml
 config.yaml
 #Certs
@@ -19,5 +21,7 @@ config.yaml
 *.p12
 *.pfx
 *.cer
+*.crt
+!ca_chain.crt
 # Packages
 *.tgz

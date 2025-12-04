@@ -8,8 +8,8 @@ Network automation sync for IPAM to Firewall systems (FortiOS and VMware NSX).
 helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
-  --set credentials.namToken="your-nam-token" \
-  --set credentials.splunkToken="your-splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 ## Mandatory Parameters
@@ -92,8 +92,8 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set settings.priority="high" \
-  --set credentials.namToken="prod-token-here" \
-  --set credentials.splunkToken="prod-splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 Creates CronJob: `ipam-firewall-ssi-high-prod` in namespace `ssi`
@@ -104,8 +104,8 @@ Creates CronJob: `ipam-firewall-ssi-high-prod` in namespace `ssi`
 helm install ipam-firewall-ssi-medium-qa ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/qa.yaml \
   --set settings.priority="medium" \
-  --set credentials.namToken="qa-token-here" \
-  --set credentials.splunkToken="qa-splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 Creates CronJob: `ipam-firewall-ssi-medium-qa` in namespace `ssi`
@@ -116,8 +116,8 @@ Creates CronJob: `ipam-firewall-ssi-medium-qa` in namespace `ssi`
 helm install ipam-firewall-ssi-low-test ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/test.yaml \
   --set settings.priority="low" \
-  --set credentials.namToken="test-token-here" \
-  --set credentials.splunkToken="test-splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 Creates CronJob: `ipam-firewall-ssi-low-test` in namespace `ssi`
@@ -129,8 +129,8 @@ helm install ipam-firewall-ssi-medium-prod ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
   --set schedule="0 */2 * * *" \
   --set settings.priority="medium" \
-  --set credentials.namToken="token" \
-  --set credentials.splunkToken="splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 ```
 
 ## Environment-Specific Values
@@ -151,8 +151,8 @@ Pre-configured environment files are available:
 helm install ipam-firewall-ssi-{priority}-{infrastructure} ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/{infrastructure}.yaml \
   --set settings.priority="{priority}" \
-  --set credentials.namToken="token" \
-  --set credentials.splunkToken="splunk-token"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 
 # Upgrade
 helm upgrade ipam-firewall-ssi-{priority}-{infrastructure} ./charts/dcn-ipam-firewall-ssi \
@@ -166,8 +166,8 @@ helm uninstall ipam-firewall-ssi-{priority}-{infrastructure}
 helm template ipam-firewall-ssi-low-test ./charts/dcn-ipam-firewall-ssi \
   -f charts/dcn-ipam-firewall-ssi/env/test.yaml \
   --set settings.priority="low" \
-  --set credentials.namToken="test" \
-  --set credentials.splunkToken="test"
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
 
 # Validate
 helm lint ./charts/dcn-ipam-firewall-ssi
@@ -235,8 +235,8 @@ argocd app create ipam-firewall-ssi-high-prod \
   --dest-namespace ssi \
   --values env/prod.yaml \
   --helm-set settings.priority=high \
-  --helm-set credentials.namToken="your-token" \
-  --helm-set credentials.splunkToken="your-splunk-token" \
+  --helm-set credentials.namToken="<api-token-here>" \
+  --helm-set credentials.splunkToken="<api-token-here>" \
   --sync-policy automated \
   --sync-option CreateNamespace=true
 
@@ -248,8 +248,8 @@ argocd app create ipam-firewall-ssi-medium-qa \
   --dest-namespace ssi \
   --values env/qa.yaml \
   --helm-set settings.priority=medium \
-  --helm-set credentials.namToken="your-token" \
-  --helm-set credentials.splunkToken="your-splunk-token" \
+  --helm-set credentials.namToken="<api-token-here>" \
+  --helm-set credentials.splunkToken="<api-token-here>" \
   --sync-policy automated \
   --sync-option CreateNamespace=true
 
@@ -261,8 +261,8 @@ argocd app create ipam-firewall-ssi-low-test \
   --dest-namespace ssi \
   --values env/test.yaml \
   --helm-set settings.priority=low \
-  --helm-set credentials.namToken="your-token" \
-  --helm-set credentials.splunkToken="your-splunk-token" \
+  --helm-set credentials.namToken="<api-token-here>" \
+  --helm-set credentials.splunkToken="<api-token-here>" \
   --sync-policy automated \
   --sync-option CreateNamespace=true
 ```

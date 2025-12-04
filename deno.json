@@ -3,7 +3,7 @@
   "tasks": {
     "dev": "deno run --allow-net --allow-read --allow-write --allow-env --allow-sys=hostname --unsafely-ignore-certificate-errors --watch main.ts",
     "test": "deno test --allow-all --unsafely-ignore-certificate-errors main_test.ts",
-    "run": "deno run --allow-net --allow-read --allow-write --allow-sys=hostname --allow-env --cert /etc/ssl/certs/nhn_internal_ca_chain.crt main.ts",
+    "run": "deno run --allow-net --allow-read --allow-write --allow-sys=hostname --allow-env --cert ./ca_chain.crt main.ts",
     "unsafe": "deno run --allow-net --allow-read --allow-write --allow-sys=hostname --allow-env --unsafely-ignore-certificate-errors main.ts",
     "debug": "deno run --allow-all --unsafely-ignore-certificate-errors --log-level=debug  --inspect-brk main.ts",
     "update": "deno outdated --update --latest",

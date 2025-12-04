@@ -53,7 +53,7 @@ export const deploySecurityGroup = async (
           {
             component: "nsx.service",
             method: "deploySecurityGroup",
-            error: isDevMode() ? error : (error as Error).message,
+            error: isDevMode() ? error : error?.message,
           },
         );
       })) as VMwareNSXGroup;
@@ -83,7 +83,7 @@ export const deploySecurityGroup = async (
             {
               component: "nsx.service",
               method: "deploySecurityGroup",
-              error: isDevMode() ? error : (error as Error).message,
+              error: isDevMode() ? error : error?.message,
             },
           );
         });
@@ -132,8 +132,6 @@ export const deploySecurityGroup = async (
             globalManager,
           )
           .then((_res) => {
-            console.log("Update resp", _res);
-
             logger.info(
               `ipam-firewall-ssi: Updated security group '${securityGroupObject.display_name}' on '${nsx.getHostname()}'`,
               {
@@ -148,7 +146,7 @@ export const deploySecurityGroup = async (
               {
                 component: "nsx.service",
                 method: "deploySecurityGroup",
-                error: isDevMode() ? error : (error as Error).message,
+                error: isDevMode() ? error : error?.message,
               },
             );
           });

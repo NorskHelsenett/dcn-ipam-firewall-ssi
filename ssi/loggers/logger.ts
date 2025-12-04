@@ -176,7 +176,7 @@ logger.on("error", (error: Error) => {
   logger.warning(`ipam-firewall-ssi: Error in logger ${error.message}`, {
     component: "logger",
     method: "winston.createLogger",
-    error: isDevMode() ? error : (error as Error).message,
+    error: isDevMode() ? error : error?.message,
   });
 });
 
@@ -203,18 +203,18 @@ const addHecLogger = () => {
       );
       logger.add(hecLogger);
     }
-  } catch (error) {
-    console.log("Catching error");
-    logger.error(
-      `ipam-firewall-ssi: Error on WinstonHecLogger,  ${
-        (error as Error).message
-      }`,
-      {
-        component: "logger",
-        method: "addHecLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on WinstonHecLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "addHecLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
+
     throw error;
   }
 };
@@ -229,17 +229,17 @@ export const removeHecLogger = () => {
       hecLogger.dispose();
       hecLogger = undefined;
     }
-  } catch (error) {
-    logger.error(
-      `ipam-firewall-ssi: Error on removeHecLogger,  ${
-        (error as Error).message
-      }`,
-      {
-        component: "logger",
-        method: "removeHecLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on removeHecLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "removeHecLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
   }
 };
 
@@ -331,15 +331,17 @@ export const addFileLoggers = () => {
       logger.add(errorFileLogger);
       logger.add(debugFileLogger);
     }
-  } catch (error) {
-    logger.error(
-      `ipam-firewall-ssi: Error on FileLogger,  ${(error as Error).message}`,
-      {
-        component: "logger",
-        method: "addFileLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on FileLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "addFileLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
   }
 };
 
@@ -364,17 +366,17 @@ export const removeFileLoggers = () => {
       logger.remove(debugFileLogger);
       debugFileLogger = undefined;
     }
-  } catch (error) {
-    logger.error(
-      `ipam-firewall-ssi: Error on removeFileLogger,  ${
-        (error as Error).message
-      }`,
-      {
-        component: "logger",
-        method: "removeFileLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on removeFileLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "removeFileLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
   }
 };
 
@@ -401,17 +403,17 @@ export const addSplunkFileLogger = () => {
 
       logger.add(splunkFileLogger);
     }
-  } catch (error) {
-    logger.error(
-      `ipam-firewall-ssi: Error on SplunkFileLogger,  ${
-        (error as Error).message
-      }`,
-      {
-        component: "logger",
-        method: "addSplunkFileLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on SplunkFileLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "addSplunkFileLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
   }
 };
 
@@ -424,17 +426,17 @@ export const removeSplunkFileLogger = () => {
       logger.remove(splunkFileLogger);
       splunkFileLogger = undefined;
     }
-  } catch (error) {
-    logger.error(
-      `ipam-firewall-ssi: Error on removeSplunkFileLogger,  ${
-        (error as Error).message
-      }`,
-      {
-        component: "logger",
-        method: "removeSplunkFileLogger",
-        error: isDevMode() ? error : (error as Error).message,
-      },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(
+        `ipam-firewall-ssi: Error on removeSplunkFileLogger,  ${error?.message}`,
+        {
+          component: "logger",
+          method: "removeSplunkFileLogger",
+          error: isDevMode() ? error : error?.message,
+        },
+      );
+    }
   }
 };
 
