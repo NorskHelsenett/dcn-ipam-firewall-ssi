@@ -33,8 +33,9 @@ CMD ["deno", "task", "run"]
 
 #DEBUG Set the default command to run bash when the container starts, and user deno.
 # Comment out the next 3 lines for removing debug
-#RUN apt-get update && apt-get install -y curl iputils-ping
-#CMD ["/bin/bash"]
+#RUN apt-get update && apt-get install -y curl wget iputils-ping
 #USER deno
+#CMD ["/bin/bash", "-c", "while true; do sleep 30; done;"]
+
 
 
