@@ -195,7 +195,7 @@ const addHecLogger = () => {
             "Content-Type": "application/json",
             Authorization: `Splunk ${SPLUNK_TOKEN}`,
           },
-          // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT),
         },
         {
           level: "info",

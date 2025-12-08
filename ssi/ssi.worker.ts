@@ -60,7 +60,7 @@ export class SSIWorker {
           "Content-Type": "application/json",
           Authorization: `Bearer ${NAM_TOKEN}`,
         },
-        // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT),
       });
     }
   }
@@ -332,7 +332,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Token ${endpoint.key}`,
       },
-      // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   }
 
@@ -347,7 +347,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Bearer ${endpoint.key}`,
       },
-      // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   }
 
@@ -367,7 +367,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Basic ${encodedAuth}`,
       },
-      // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   };
 
