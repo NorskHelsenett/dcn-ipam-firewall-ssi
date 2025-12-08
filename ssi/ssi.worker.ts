@@ -332,7 +332,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Token ${endpoint.key}`,
       },
-      // * NOTE!: Only add if a timeout needed, signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   }
 
