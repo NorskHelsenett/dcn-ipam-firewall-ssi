@@ -15,7 +15,7 @@ data:
     SSI_NAME: "IPAM-Firewall-SSI"              # Service name
     SSI_PRIORITY: "high"                       # Execution priority: low, medium, high
     SSI_INTERVAL: "60"                         # Sync interval in seconds (used in continuous mode)
-    REQUEST_TIMEOUT: "6000"                    # API request timeout in milliseconds
+    REQUEST_TIMEOUT: "5000"                    # API request timeout in milliseconds
 
     # NAM (Network Automation Manager) settings
     NAM_URL: "https://qa.dcn.nhn.no:3000/api"  # NAM API endpoint
