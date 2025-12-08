@@ -27,6 +27,5 @@
       "**/*.yml"
     ]
   },
-  "lock": false,
   "nodeModulesDir": "auto"
 }
