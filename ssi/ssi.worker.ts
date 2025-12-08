@@ -28,7 +28,7 @@ import logger from "./loggers/logger.ts";
 const SSI_NAME = Deno.env.get("SSI_NAME") ?? "SSI_NAME_MISSING";
 const USER_AGENT = `${SSI_NAME}/${packageInfo.version}`;
 Deno.env.set("USER_AGENT", USER_AGENT);
-const _REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
+const REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
   ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
   : 10000;
 
@@ -60,7 +60,7 @@ export class SSIWorker {
           "Content-Type": "application/json",
           Authorization: `Bearer ${NAM_TOKEN}`,
         },
-        // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT),
       });
     }
   }
@@ -172,7 +172,7 @@ export class SSIWorker {
             )
           )?.results || [];
 
-          if (!netboxPrefixes || netboxPrefixes.length === 0) {
+          if (!netboxPrefixes) {
             if (isDevMode()) {
               logger.info(
                 `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
@@ -347,7 +347,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Bearer ${endpoint.key}`,
       },
-      // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   }
 
@@ -367,7 +367,7 @@ export class SSIWorker {
         "Content-Type": "application/json",
         Authorization: `Basic ${encodedAuth}`,
       },
-      // * NOTE!: Only add if a timeout needed,  signal: AbortSignal.timeout(REQUEST_TIMEOUT),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT),
     });
   };
 
