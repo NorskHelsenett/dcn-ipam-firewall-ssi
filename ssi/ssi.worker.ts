@@ -168,20 +168,20 @@ export class SSIWorker {
                     error: isDevMode() ? error : error.message,
                   },
                 );
+                return;
               },
             )
-          )?.results || [];
+          )?.results;
 
           if (!netboxPrefixes) {
-            if (isDevMode()) {
-              logger.info(
-                `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
-                {
-                  component: "worker",
-                  method: "work",
-                },
-              );
-            }
+            logger.info(
+              `ipam-firewall-ssi: Skipping due to missing prefixes for '${integrator?.name}'...`,
+              {
+                component: "worker",
+                method: "work",
+              },
+            );
+            continue;
           }
 
           const prefixes = mapper(netboxPrefixes);
