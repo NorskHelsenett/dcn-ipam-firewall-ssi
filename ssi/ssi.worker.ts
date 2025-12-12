@@ -89,7 +89,7 @@ export class SSIWorker {
               },
             ).catch((error) => {
               logger.error(
-                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()},  ${error.message} @ ${NAM_URL}`,
+                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()}, ${error.message} @ ${NAM_URL}`,
                 {
                   component: "worker",
                   method: "getNetboxIntegrator",
@@ -105,7 +105,7 @@ export class SSIWorker {
               sync_priority: priority,
             }).catch((error) => {
               logger.error(
-                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()},  ${error.message} @ ${NAM_URL}`,
+                `ipam-firewall-ssi: Failed fetching integrators on ${Deno.hostname()}, ${error.message} @ ${NAM_URL}`,
                 {
                   component: "worker",
                   method: "getNetboxIntegrator",
@@ -127,9 +127,7 @@ export class SSIWorker {
                 },
               );
             }
-            if (NAM_TEST_INT && integrator) {
-              // run even if integrator is disable, as it is for testing.
-            } else {
+            if (!NAM_TEST_INT) {
               continue;
             }
           }
@@ -299,13 +297,14 @@ export class SSIWorker {
 
         this._running = false;
         this._resetDriverInstances();
+        this._run_counter += 1;
         logger.debug("ipam-firewall-ssi: Worker task completed...", {
           component: "worker",
           method: "work",
         });
-        // Should be a console log only, as it should not be logged and stored.
+        // This shall be a console log, as we´re only interested in number of runs completed, and not logging them.
         console.log(
-          `ipam-firewall-ssi: Completed run number ${(this._run_counter += 1)}`,
+          `ipam-firewall-ssi: Completed run number ${this._run_counter}`,
         );
         return 0;
       } else {

@@ -32,10 +32,6 @@ let INTERVAL_ID: number | undefined;
 const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low";
 /** Sync interval in seconds for continuous mode */
 const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") ?? "900");
-/** Request timeout for API calls and log flushing in milliseconds */
-const _REQUEST_TIMEOUT = Deno.env.get("REQUEST_TIMEOUT")
-  ? parseInt(Deno.env.get("REQUEST_TIMEOUT") as string)
-  : 3000;
 envLoader.close();
 /**
  * Starts the SSI worker with mode-specific execution behavior
@@ -74,9 +70,9 @@ const start = async (): Promise<void> => {
       logger.info(
         `ipam-firewall-ssi: Initializing worker on ${Deno.hostname()} with priority ${SSI_PRIORITY} running every ${SSI_INTERVAL} seconds...`,
       );
-      ssiWorker.work(SSI_PRIORITY);
-      INTERVAL_ID = setInterval(() => {
-        ssiWorker.work(SSI_PRIORITY);
+      await ssiWorker.work(SSI_PRIORITY);
+      INTERVAL_ID = setInterval(async () => {
+        await ssiWorker.work(SSI_PRIORITY);
       }, SSI_INTERVAL * 1000);
     }
   } catch (error: unknown) {
@@ -85,7 +81,7 @@ const start = async (): Promise<void> => {
     }
     if (error instanceof Error) {
       logger.error(
-        `ipam-firewall-ssi: Error occurred on ${Deno.hostname()},  ${error.message}`,
+        `ipam-firewall-ssi: Error occurred on ${Deno.hostname()}, ${error.message}`,
         {
           component: "main",
           method: "start",
