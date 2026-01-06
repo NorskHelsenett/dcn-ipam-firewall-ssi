@@ -1,0 +1,39 @@
+{{- if eq .Values.alarmathan.enable true}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations:
+    prometheus-operator-validated: "true"
+  labels:
+    release: prometheus
+  name: ipam-firewall-ssi-{{ .Values.settings.priority }}-{{ .Values.settings.infrastructure }}-prometheus-rules
+  namespace: {{ .Values.namespace }}
+spec:
+  groups:
+  - name: pod.errors
+    rules:
+    - alert: IPAM_FIREWALL_SSI_ALERT
+      annotations:
+        description: {{ quote "POD '{{ $labels.pod }}' in namespace '{{ $labels.namespace }}' has restarted 3 or more times in the last 5 minutes - https://confluence.nhn.no/x/-5YjGw" | replace "\"" "" }}
+        summary: {{ quote "IPAM Firewall SSI POD has crashed 3 or more times in the last 5 minutes - POD:{{ $labels.pod }} - https://confluence.nhn.no/x/-5YjGw" | replace "\"" "" }}
+      expr: |
+        (
+          sum by (namespace, pod) (
+            increase(kube_pod_container_status_restarts_total{
+              namespace="{{ .Values.namespace }}",
+              pod=~"ipam-firewall-ssi-{{ .Values.settings.priority }}-{{ .Values.settings.infrastructure }}-.*"
+            }[5m])
+          )
+        ) >= 3
+      for: 0m
+      labels:
+        app:  ipam-firewall-ssi-{{ .Values.settings.priority }}-{{ .Values.settings.infrastructure }}
+        cluster: {{ .Values.alarmathan.cluster }}
+        criticality: {{ .Values.alarmathan.criticality }}
+        environment: {{ .Values.alarmathan.environment }}
+        namespace: prometheus-operator
+        severity: {{ .Values.alarmathan.severity }}
+        service_id: {{ .Values.alarmathan.service_id | quote }}
+        team: {{ .Values.alarmathan.team }}
+        varseltilos: {{ .Values.alarmathan.varseltilos }}
+{{ end }}
