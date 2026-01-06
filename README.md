@@ -260,9 +260,9 @@ deployments:
 - **Configurable routing**: Alert labels for team-based routing and severity
   levels
 
-See the [Helm Chart
-README](charts/dcn-ipam-firewall-ssi/README.md#monitoring-and-alerting) for
-detailed monitoring configuration and alert setup.
+See the
+[Helm Chart README](charts/dcn-ipam-firewall-ssi/README.md#monitoring-and-alerting)
+for detailed monitoring configuration and alert setup.
 
 ## Support
 

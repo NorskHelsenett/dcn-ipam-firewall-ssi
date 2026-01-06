@@ -32,16 +32,16 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 
 ### Monitoring & Alerting
 
-| Variable                  | Description                       | Default     | Values/Notes                              |
-| ------------------------- | --------------------------------- | ----------- | ----------------------------------------- |
-| `alarmathan.enable`       | Enable Prometheus alerting        | `false`     | `true` to deploy PrometheusRule           |
-| `alarmathan.cluster`      | Kubernetes cluster identifier     | `""`        | String                                    |
-| `alarmathan.criticality`  | Alert criticality level           | `""`        | String (e.g., `high`, `medium`, `low`)    |
-| `alarmathan.environment`  | Environment label for alerts      | `""`        | String (e.g., `prod`, `qa`, `test`)       |
-| `alarmathan.severity`     | Alert severity level              | `""`        | String (e.g., `critical`, `warning`)      |
-| `alarmathan.service_id`   | Service identifier for alerts     | `""`        | String                                    |
-| `alarmathan.team`         | Team responsible for alerts       | `""`        | String                                    |
-| `alarmathan.varseltilos`  | Alert routing configuration       | `""`        | String                                    |
+| Variable                 | Description                   | Default | Values/Notes                           |
+| ------------------------ | ----------------------------- | ------- | -------------------------------------- |
+| `alarmathan.enable`      | Enable Prometheus alerting    | `false` | `true` to deploy PrometheusRule        |
+| `alarmathan.cluster`     | Kubernetes cluster identifier | `""`    | String                                 |
+| `alarmathan.criticality` | Alert criticality level       | `""`    | String (e.g., `high`, `medium`, `low`) |
+| `alarmathan.environment` | Environment label for alerts  | `""`    | String (e.g., `prod`, `qa`, `test`)    |
+| `alarmathan.severity`    | Alert severity level          | `""`    | String (e.g., `critical`, `warning`)   |
+| `alarmathan.service_id`  | Service identifier for alerts | `""`    | String                                 |
+| `alarmathan.team`        | Team responsible for alerts   | `""`    | String                                 |
+| `alarmathan.varseltilos` | Alert routing configuration   | `""`    | String                                 |
 
 **Alert Configuration**: When enabled, a PrometheusRule is deployed that
 monitors pod restart counts. The alert triggers when a pod restarts 3 or more
