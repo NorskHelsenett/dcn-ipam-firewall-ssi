@@ -15,6 +15,16 @@ settings:
   interval: 300
   continuousMode: false
 
+alarmathan:
+  enable: false
+  environment: test
+  cluster: t-dcn-001
+  criticality: Høy
+  severity: Høy
+  service_id: 917
+  team: Team Datasenter-Nettverk (Forretningsområde Skytjenester)
+  varseltilos: test
+
 integration:
   nam:
     url: "https://qa.dcn.nhn.no:3000/api"

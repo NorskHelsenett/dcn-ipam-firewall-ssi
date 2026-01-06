@@ -27,6 +27,9 @@ settings:
   timeout: 5000 # In milliseconds
   continuousMode: false
 
+alarmathan:
+  enable: false
+
 integration:
   nam:
     url: ""
