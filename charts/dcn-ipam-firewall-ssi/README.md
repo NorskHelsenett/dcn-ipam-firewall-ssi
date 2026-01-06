@@ -30,6 +30,24 @@ helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
 | `nameOverride` | Override chart name  | `""`                |
 | `workspace`    | Workspace identifier | `ipam-firewall-ssi` |
 
+### Monitoring & Alerting
+
+| Variable                  | Description                       | Default     | Values/Notes                              |
+| ------------------------- | --------------------------------- | ----------- | ----------------------------------------- |
+| `alarmathan.enable`       | Enable Prometheus alerting        | `false`     | `true` to deploy PrometheusRule           |
+| `alarmathan.cluster`      | Kubernetes cluster identifier     | `""`        | String                                    |
+| `alarmathan.criticality`  | Alert criticality level           | `""`        | String (e.g., `high`, `medium`, `low`)    |
+| `alarmathan.environment`  | Environment label for alerts      | `""`        | String (e.g., `prod`, `qa`, `test`)       |
+| `alarmathan.severity`     | Alert severity level              | `""`        | String (e.g., `critical`, `warning`)      |
+| `alarmathan.service_id`   | Service identifier for alerts     | `""`        | String                                    |
+| `alarmathan.team`         | Team responsible for alerts       | `""`        | String                                    |
+| `alarmathan.varseltilos`  | Alert routing configuration       | `""`        | String                                    |
+
+**Alert Configuration**: When enabled, a PrometheusRule is deployed that
+monitors pod restart counts. The alert triggers when a pod restarts 3 or more
+times within a 5-minute window, indicating potential crashes or configuration
+issues.
+
 ### Image Configuration
 
 | Variable           | Description                | Default                                                    |
@@ -277,3 +295,82 @@ argocd app create ipam-firewall-ssi-low-test \
 - Secret naming pattern: `ipam-firewall-ssi-{infrastructure}-secrets`
 - Security context runs as non-root user (UID/GID 1993)
 - Read-only root filesystem with writable logs volume
+
+## Monitoring and Alerting
+
+The chart includes optional Prometheus monitoring capabilities via
+PrometheusRule CRD.
+
+### Enabling Alerts
+
+Set `alarmathan.enable: true` in your values to deploy a PrometheusRule that
+monitors pod health:
+
+```bash
+helm install ipam-firewall-ssi-high-prod ./charts/dcn-ipam-firewall-ssi \
+  -f charts/dcn-ipam-firewall-ssi/env/prod.yaml \
+  --set settings.priority="high" \
+  --set alarmathan.enable=true \
+  --set alarmathan.cluster="prod-cluster" \
+  --set alarmathan.criticality="high" \
+  --set alarmathan.environment="production" \
+  --set alarmathan.severity="critical" \
+  --set alarmathan.team="network-ops" \
+  --set credentials.namToken="<api-token-here>" \
+  --set credentials.splunkToken="<api-token-here>"
+```
+
+### Alert Behavior
+
+**Alert Name**: `IPAM_FIREWALL_SSI_ALERT`
+
+**Trigger Condition**: Pod restarts 3 or more times within a 5-minute window
+
+**PromQL Expression**:
+
+```promql
+sum by (namespace, pod) (
+  increase(kube_pod_container_status_restarts_total{
+    namespace="ssi",
+    pod=~"ipam-firewall-ssi-deployment-{priority}-{infrastructure}-.*"
+  }[5m])
+) >= 3
+```
+
+**Alert Labels**:
+
+- `app`: Application identifier with priority and infrastructure
+- `cluster`: Kubernetes cluster name
+- `criticality`: Business impact level
+- `environment`: Deployment environment
+- `severity`: Alert severity (critical, warning, etc.)
+- `service_id`: Service tracking identifier
+- `team`: Responsible team
+- `varseltilos`: Alert routing configuration
+
+**Use Cases**:
+
+- Detect application crashes or restart loops
+- Monitor configuration issues causing pod failures
+- Track resource exhaustion (OOM kills)
+- Alert on unhealthy deployments in production
+
+### Configuration Example
+
+```yaml
+alarmathan:
+  enable: true
+  cluster: "prod-k8s-cluster"
+  criticality: "high"
+  environment: "production"
+  severity: "critical"
+  service_id: "ipam-firewall-ssi"
+  team: "network-automation"
+  varseltilos: "slack-network-ops"
+```
+
+### Requirements
+
+- Prometheus Operator installed in cluster
+- PrometheusRule CRD available (monitoring.coreos.com/v1)
+- Alert manager configured to route alerts based on labels

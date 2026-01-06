@@ -15,6 +15,8 @@ address objects and groups:
   execution
 - **Flexible execution**: One-shot mode for CronJobs or continuous mode for
   long-running containers
+- **Production monitoring**: Optional Prometheus alerting for pod health
+  monitoring
 
 ## Requirements
 
@@ -246,7 +248,21 @@ specific language governing permissions and limitations under the License.
   setup, project structure, and contributing guidelines
 - **Helm Chart**: See
   [charts/dcn-ipam-firewall-ssi/README.md](charts/dcn-ipam-firewall-ssi/README.md)
-  for Helm chart documentation
+  for Helm chart documentation and monitoring configuration
+
+## Monitoring
+
+The service includes Prometheus monitoring capabilities for production
+deployments:
+
+- **Pod health monitoring**: Automatically tracks pod restart counts
+- **Alert on failures**: Triggers when pods restart 3+ times in 5 minutes
+- **Configurable routing**: Alert labels for team-based routing and severity
+  levels
+
+See the [Helm Chart
+README](charts/dcn-ipam-firewall-ssi/README.md#monitoring-and-alerting) for
+detailed monitoring configuration and alert setup.
 
 ## Support
 
