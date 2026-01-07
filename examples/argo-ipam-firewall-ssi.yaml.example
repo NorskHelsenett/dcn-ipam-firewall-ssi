@@ -13,8 +13,8 @@ spec:
     chart: dcn-ipam-firewall-ssi
     helm:
       valueFiles:
-      - values.yaml
-      - env/qa.yaml #test, qa, prod
+        - values.yaml
+        - env/qa.yaml # Environments test, qa, prod
       parameters:
         - name: settings.continuousMode
           value: "true" # True for continuous mode (Pod), false for one shot mode (CronJob)
@@ -27,7 +27,13 @@ spec:
         - name: credentials.namToken
           value: "<NAM_TOKEN_HERE>"
         - name: credentials.splunkToken
-          value: "<SPLUNK_TOKEN_HERE>" 
+          value: "<SPLUNK_TOKEN_HERE>"
+        - name: alarmathan.enable
+          value: "true" # True to enable PrometheusRule
+        - name: alarmathan.environment
+          value: "prod" # 'prod' for Production and 'test' for Test environment
+        - name: alarmathan.varseltilos
+          value: "prod" # 'prod' for Production and 'test' for Test logging destination
     repoURL: ncr.sky.nhn.no/ghcr/norskhelsenett/helm
     targetRevision: "*"
   syncPolicy:
@@ -35,4 +41,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
