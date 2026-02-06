@@ -12,6 +12,13 @@ import { EnvLoader, isDevMode } from "@norskhelsenett/zeniki";
 import { SSIWorker } from "./ssi/ssi.worker.ts";
 import logger from "./ssi/loggers/logger.ts";
 import packageInfo from "./deno.json" with { type: "json" };
+import { Application } from "@oak/oak/application";
+import { Router } from "@oak/oak/router";
+import { authz } from "./ssi/http/middelware.service.ts";
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { basicAuth } from "hono/basic-auth";
+import { prettyJSON } from "hono/pretty-json";
 
 /** Path to secrets configuration file */
 const SECRETS_PATH = Deno.env.get("SECRETS_PATH") ?? undefined;
@@ -33,6 +40,7 @@ const SSI_PRIORITY = Deno.env.get("SSI_PRIORITY") ?? "low";
 /** Sync interval in seconds for continuous mode */
 const SSI_INTERVAL = parseInt(Deno.env.get("SSI_INTERVAL") ?? "900");
 envLoader.close();
+
 /**
  * Starts the SSI worker with mode-specific execution behavior
  * One-shot mode (CRON_MODE != "true"): Runs once and exits (for CronJobs)
@@ -53,6 +61,7 @@ envLoader.close();
  * await start(); // Runs every 300 seconds
  * ```
  */
+
 const start = async (): Promise<void> => {
   try {
     console.log(`Starting ${USER_AGENT}`);
@@ -102,4 +111,65 @@ const start = async (): Promise<void> => {
   }
 };
 
-start();
+// start();
+/**
+const router = new Router();
+router.get("/", (ctx) => {
+  ctx.response.body = `<!DOCTYPE html>
+    <html>
+      <head><title>Hello oak!</title><head>
+      <body>
+        <h1>Hello oak!</h1>
+      </body>
+    </html>
+  `;
+});
+
+const app = new Application();
+app.use(authz);
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.listen({
+  port: 8080,
+  cert: await Deno.readTextFile("./ssl/localhost.crt"),
+  key: await Deno.readTextFile("./ssl/localhost.key"),
+});
+*/
+
+const app = new Hono();
+app.get("/", (c) => c.text("Pretty Blog API"));
+app.use(prettyJSON());
+app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
+
+type Bindings = {
+  USERNAME: string;
+  PASSWORD: string;
+};
+
+const api = new Hono<{ Bindings: Bindings }>();
+
+api.post(
+  "/notifications",
+  async (c, next) => {
+    const auth = basicAuth({
+      username: "test",
+      password: "test",
+      invalidUserMessage: { message: "Wrong username or password!" },
+    });
+    return auth(c, next);
+  },
+  async (c) => {
+    console.log(await c.req.json());
+    c.status(200);
+    return c.json({ message: "ok" });
+  },
+);
+
+app.route("/api", api);
+
+Deno.serve({
+  port: 8080,
+  cert: Deno.readTextFileSync("./ssl/localhost.crt"),
+  key: Deno.readTextFileSync("./ssl/localhost.key"),
+}, app.fetch);

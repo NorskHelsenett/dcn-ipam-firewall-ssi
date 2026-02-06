@@ -9,6 +9,7 @@ tmp/
 *.tmp.ts
 test_/
 
+
 #Certs
 *.pem
 *.key
@@ -38,6 +39,7 @@ secrets*.yml
 /secrets
 /logs
 /ssl
+ssl/
 .ssl
 config.json
 config.yaml
